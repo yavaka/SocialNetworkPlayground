@@ -1,0 +1,68 @@
+﻿@model SocialMedia.Models.ViewModels.FriendshipViewModel
+@{
+    ViewData["Title"] = "FriendRequests";
+}
+<div class="container">
+    <h1 class="text-center">Friend Requests</h1>
+</div>
+
+<div class="container">
+    <div class="float-md-left">
+        <h3>Requests</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Username
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Requests)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.UserName)
+                        </td>
+                        <td>
+                            <a asp-action="Accept" asp-route-id="@item.Id">Accept</a> |
+                        </td>
+                        <td>
+                            <a asp-action="Reject" asp-route-id="@item.Id">Reject</a>
+                        </td>
+                        <td>
+                            <a asp-action="UserProfile" asp-route-id="@item.Id">View Profile</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="float-md-right">
+        <h3>Pending</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Username
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Pending)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.UserName)
+                        </td>
+                        <td>
+                            <a asp-action="UserProfile" asp-route-id="@item.Id">View Profile</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

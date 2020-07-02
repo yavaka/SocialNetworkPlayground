@@ -1,0 +1,59 @@
+﻿@model SocialMedia.Models.ViewModels.GroupViewModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>@Model.Group.Title</h1>
+
+<!--Group information-->
+<div class="row">
+    <div class="col-sm-4">
+        <b>Group @Html.DisplayNameFor(model => model.Group.Description)</b> :
+    </div>
+    <div" class="col-sm-8">
+        @Html.DisplayFor(model => model.Group.Description)
+    </div">
+    <div class="col-md-2"><a asp-controller="Groups" asp-action="GroupMembers" asp-route-id="@Model.Group.GroupId">Members</a></div>
+    <div class="col-md-8"></div>
+    <div class="col-md-2">
+        <button>@Html.ActionLink("Leave group", "LeaveGroup", "Groups", new { id = Model.Group.GroupId })</button>
+    </div>
+</div>
+<hr />
+
+<!--Group posts-->
+<div class="container">
+    <div class="jumbotron">
+        <button>@Html.ActionLink("Create post", "Create", "Posts", new { id = Model.Group.GroupId })</button>
+    </div>
+    @if (Model.Posts.Count == 0)
+    {
+        <div class="jumbotron">
+            <h3>There are no posts in this group yet.</h3>
+        </div>
+    }
+    else
+    {
+        var posts = Model.Posts.OrderByDescending(d => d.Post.DatePosted);
+
+        @foreach (var postViewModel in posts)
+        {
+            <div class="jumbotron">
+                <h3>@postViewModel.Post.Author.UserName</h3>
+                @* Tagged users *@
+                @if (postViewModel.Tagged.Count > 0)
+                {
+                    <h4>@String.Join(',', postViewModel.Tagged)</h4>
+                }
+                <hr />
+                <p style="font-size:24px">@postViewModel.Post.Content</p>
+                <span>@postViewModel.Post.DatePosted.Date</span>
+                <hr />
+
+                <button class="btn btn-outline-info">@Html.ActionLink("Comments", "Index", "Comments", new { id = postViewModel.Post.PostId })</button>
+                <button class="btn btn-outline-primary">@Html.ActionLink("Add comment", "Create", "Comments", new { id = postViewModel.Post.PostId })</button>
+            </div>
+        }
+    }
+</div>
