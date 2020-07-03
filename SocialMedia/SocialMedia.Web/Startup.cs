@@ -33,7 +33,7 @@ namespace SocialMedia.Web
             
             services
                 .AddDbContext<SocialMediaDbContext>(opt => opt
-                    .UseSqlServer("Server=(localdb)\\MSSQLLocalDB; Database=SocialMedia; Integrated Security=True; Trusted_Connection=True"));
+                    .UseSqlServer(Configuration.GetConnectionString("SocialMediaDb")));
 
             services.AddIdentity();
 
