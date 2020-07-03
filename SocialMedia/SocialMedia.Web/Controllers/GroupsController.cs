@@ -1,15 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using SocialMedia.Data;
-using SocialMedia.Models;
-using SocialMedia.Models.ViewModels;
-
+﻿
 namespace SocialMedia.Web.Controllers
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
+    using SocialMedia.Data;
+    using SocialMedia.Data.Models;
+    using SocialMedia.Models.ViewModels;
+
     public class GroupsController : Controller
     {
         private readonly SocialMediaDbContext _context;
@@ -110,10 +111,10 @@ namespace SocialMedia.Web.Controllers
             }
 
             ViewModel = new GroupViewModel();
-            
+
             //Gets the group
             ViewModel.Group = await _context.Groups
-                .Include(p =>p.Posts)
+                .Include(p => p.Posts)
                 .FirstOrDefaultAsync(m => m.GroupId == id);
 
             if (ViewModel.Group == null)
@@ -128,16 +129,16 @@ namespace SocialMedia.Web.Controllers
                 {
                     //Gets the current post with TagFriends and Author db records
                     var postTFEntities = GetPostById(post.PostId);
-                    ViewModel.Posts.Add(new PostTagFriendsViewModel() 
+                    ViewModel.Posts.Add(new PostTagFriendsViewModel()
                     {
                         Post = postTFEntities,
-                        Tagged = (postTFEntities.TaggedUsers.Count > 0) 
-                                    ? await GetTaggedUsersAsync(postTFEntities.TaggedUsers) 
+                        Tagged = (postTFEntities.TaggedUsers.Count > 0)
+                                    ? await GetTaggedUsersAsync(postTFEntities.TaggedUsers)
                                     : new List<User>(),
                     });
                 }
             }
-            
+
             return View(ViewModel);
         }
 
@@ -285,7 +286,7 @@ namespace SocialMedia.Web.Controllers
         {
             var group = await _context.Groups
                 .Include(p => p.Posts)
-                .FirstOrDefaultAsync(i =>i.GroupId == id);
+                .FirstOrDefaultAsync(i => i.GroupId == id);
 
             //Remove all group posts  
             if (group.Posts.Count > 0)
@@ -295,7 +296,7 @@ namespace SocialMedia.Web.Controllers
 
             _context.Groups.Remove(group);
             await _context.SaveChangesAsync();
-           
+
             return RedirectToAction(nameof(MyGroups));
         }
 

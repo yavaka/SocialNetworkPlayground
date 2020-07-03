@@ -1,21 +1,21 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using SocialMedia.Data;
-using SocialMedia.Models;
-using SocialMedia.Models.ViewModels;
-
-namespace SocialMedia.Web.Controllers
+﻿namespace SocialMedia.Web.Controllers
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
+    using SocialMedia.Data;
+    using SocialMedia.Data.Models;
+    using SocialMedia.Models.ViewModels;
+
     public class FriendshipsController : Controller
     {
         private readonly UserManager<User> _userManager;
         private readonly SocialMediaDbContext _context;
 
-        
+
         public FriendshipsController(UserManager<User> userManager,
             SocialMediaDbContext context)
         {
@@ -26,7 +26,7 @@ namespace SocialMedia.Web.Controllers
 
         private static FriendshipViewModel ViewModel { get; set; } = new FriendshipViewModel();
 
-        
+
         //Friends
         public async Task<IActionResult> Friends()
         {
@@ -182,7 +182,7 @@ namespace SocialMedia.Web.Controllers
             ViewModel.Requests = this._context.Friendships
                 .Include(r => r.Requester)
                 .Where(a => a.AddresseeId == currentUser.Id && a.Status == 0)
-                .Select(r =>r.Requester)
+                .Select(r => r.Requester)
                 .ToList();
 
             ViewModel.Pending = this._context.Friendships

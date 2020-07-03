@@ -1,4 +1,4 @@
-﻿namespace SocialMedia.Services
+﻿namespace SocialMedia.Services.Profile
 {
     public interface IProfileService
     {

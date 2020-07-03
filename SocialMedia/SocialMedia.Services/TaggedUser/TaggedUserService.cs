@@ -1,4 +1,4 @@
-﻿namespace SocialMedia.Services
+﻿namespace SocialMedia.Services.TaggedUser
 {
     using System.Collections.Generic;
     using System.Linq;

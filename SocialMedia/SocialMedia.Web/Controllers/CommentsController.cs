@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using SocialMedia.Data;
-using SocialMedia.Models;
-using SocialMedia.Models.ViewModels;
-
-namespace SocialMedia.Web.Controllers
+﻿namespace SocialMedia.Web.Controllers
 {
-    //TODO: Integrate tag friends functionality in Create and Edit methods
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
+    using SocialMedia.Data;
+    using SocialMedia.Data.Models;
+    using SocialMedia.Models.ViewModels;
+    
     public class CommentsController : Controller
     {
         private readonly SocialMediaDbContext _context;
@@ -42,12 +41,12 @@ namespace SocialMedia.Web.Controllers
             }
             //Gets current user
             var user = await this._userManager.GetUserAsync(User);
-            
+
             var commentViewModels = new List<CommentTagFriendsViewModel>();
-            
+
             //Connected: gets comments with TagFriend entities
             var comments = await _context.Comments
-                .Include(t =>t.TaggedUsers)
+                .Include(t => t.TaggedUsers)
                 .Where(a => a.CommentedPostId == _postId)
                 .ToListAsync();
 

@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using SocialMedia.Data;
-using SocialMedia.Models;
-using SocialMedia.Models.ViewModels;
-
-namespace SocialMedia.Web.Controllers
+﻿namespace SocialMedia.Web.Controllers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
+    using SocialMedia.Data;
+    using SocialMedia.Data.Models;
+    using SocialMedia.Models.ViewModels;
+
     public class PostsController : Controller
     {
         private readonly SocialMediaDbContext _context;
@@ -95,7 +95,7 @@ namespace SocialMedia.Web.Controllers
                 CurrentUser = user,
                 UserFriends = GetUserFriends(user)
             };
-            
+
             //Assign the group id if it is not null
             if (id != null)
             {
@@ -125,7 +125,7 @@ namespace SocialMedia.Web.Controllers
                     Content = viewModel.Post.Content,
                     TaggedUsers = TagFriendEntities(),
                 };
-                
+
                 //Assign groupId to the newly created post
                 if (GroupId != 0)
                 {
@@ -142,11 +142,11 @@ namespace SocialMedia.Web.Controllers
                 }
 
                 ViewModel = new PostTagFriendsViewModel();
-                
+
                 //Redirect to the given group details view
                 if (GroupId != 0)
                 {
-                    return RedirectToAction("Details","Groups",new { id = post.GroupId});
+                    return RedirectToAction("Details", "Groups", new { id = post.GroupId });
                 }
 
                 return RedirectToAction(nameof(UserPosts));
@@ -196,7 +196,7 @@ namespace SocialMedia.Web.Controllers
                 {
                     var user = await this._userManager.GetUserAsync(User);
                     ViewModel.CurrentUser = user;
-                    
+
                     var post = await this._context.Posts
                         .Include(i => i.TaggedUsers)
                         .FirstOrDefaultAsync(i => i.PostId == viewModel.Post.PostId);
@@ -213,7 +213,7 @@ namespace SocialMedia.Web.Controllers
                     RemoveTaggedFriendRecords(postTagFriendEntities, tagFriendEntities);
                     //If there is a mismatch between any record in the Connected collection will be added from the Local collection 
                     AddLocalTaggedFriends(postTagFriendEntities, tagFriendEntities);
-                    
+
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -268,9 +268,9 @@ namespace SocialMedia.Web.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var post = await _context.Posts
-                .Include(i =>i.TaggedUsers)
-                .Include(c =>c.Comments)
-                .FirstOrDefaultAsync(i =>i.PostId == id);
+                .Include(i => i.TaggedUsers)
+                .Include(c => c.Comments)
+                .FirstOrDefaultAsync(i => i.PostId == id);
 
             //Gets all comments tagged users
             var commentsTaggedUsers = GetCommentsTagFriendEntities(post.Comments);
@@ -279,7 +279,7 @@ namespace SocialMedia.Web.Controllers
             _context.TagFriends.RemoveRange(post.TaggedUsers.ToList());
             _context.TagFriends.RemoveRange(commentsTaggedUsers);
             _context.Posts.Remove(post);
-            
+
             await _context.SaveChangesAsync();
 
             if (ViewModel.Message == "profile page")
@@ -359,7 +359,7 @@ namespace SocialMedia.Web.Controllers
         //TODO: Tag friends service : TagFriend(string taggedId, string taggerId)
         public IActionResult TagFriend(string taggedId, string viewName)
         {
-            //Check is the last tagged friend is already been tagged,
+            //Check is the last tagged friend is already tagged,
             //if the tagged friends collection is not empty.
             if (ViewModel.Tagged.Count > 0)
             {

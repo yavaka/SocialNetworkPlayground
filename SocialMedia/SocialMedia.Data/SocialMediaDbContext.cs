@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
-using SocialMedia.Models;
-
-namespace SocialMedia.Data
+﻿namespace SocialMedia.Data
 {
+    using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore;
+    using SocialMedia.Data.Models;
+
     public class SocialMediaDbContext : IdentityDbContext<User>
     {
         public SocialMediaDbContext(DbContextOptions<SocialMediaDbContext> options)
@@ -17,7 +17,7 @@ namespace SocialMedia.Data
         public virtual DbSet<Friendship> Friendships { get; set; }
         public virtual DbSet<UserInGroup> UsersInGroups { get; set; }
         public virtual DbSet<TagFriends> TagFriends { get; set; }
-        
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //TagFriends
@@ -25,7 +25,7 @@ namespace SocialMedia.Data
             {
                 entity.ToTable("TagFriends");
 
-                entity.HasKey(pk =>pk.Id)
+                entity.HasKey(pk => pk.Id)
                 .HasName("TagFriends_PK");
 
                 //Tagger

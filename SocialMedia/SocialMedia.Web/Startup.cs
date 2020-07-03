@@ -1,25 +1,23 @@
-using System.IO;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Hosting;
-using SocialMedia.Data;
-using SocialMedia.Models;
-using SocialMedia.Web.Identity;
-
 namespace SocialMedia.Web
 {
+    using System.IO;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.FileProviders;
+    using Microsoft.Extensions.Hosting;
+    using SocialMedia.Data;
+    using SocialMedia.Models;
+    using SocialMedia.Web.Identity;
     using Infrastructure;
-    using Services;
-    using Services.Models;
+    using SocialMedia.Services.TaggedUser;
 
     public class Startup
     {
-        public Startup(IConfiguration configuration) 
+        public Startup(IConfiguration configuration)
             => Configuration = configuration;
 
         public IConfiguration Configuration { get; }
@@ -30,7 +28,7 @@ namespace SocialMedia.Web
             services.AddLogging();
             services.AddRazorPages();
             services.AddMvc();
-            
+
             services
                 .AddDbContext<SocialMediaDbContext>(opt => opt
                     .UseSqlServer(Configuration.GetConnectionString("SocialMediaDb")));

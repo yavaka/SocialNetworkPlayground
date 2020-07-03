@@ -1,16 +1,15 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using SocialMedia.Data;
-using SocialMedia.Models;
-using SocialMedia.Models.ViewModels;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace SocialMedia.Web.Controllers
+﻿namespace SocialMedia.Web.Controllers
 {
-    using Services;
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
+    using SocialMedia.Data;
+    using SocialMedia.Models.ViewModels;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using SocialMedia.Services.TaggedUser;
+    using SocialMedia.Data.Models;
 
     public class ProfileController : Controller
     {

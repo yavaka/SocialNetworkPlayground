@@ -1,7 +1,5 @@
-﻿namespace SocialMedia.Services
+﻿namespace SocialMedia.Services.Profile
 {
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Identity;
     using SocialMedia.Models;
 
