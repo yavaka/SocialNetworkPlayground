@@ -6,6 +6,6 @@
 
     public interface ITaggedUserService
     {
-        Task<IEnumerable<UserServiceModel>> GetTaggedUsersAsync(IEnumerable<string> tagFriendIds);
+        Task<ICollection<UserServiceModel>> GetTaggedUsersAsync(IEnumerable<string> tagFriendIds);
     }
 }

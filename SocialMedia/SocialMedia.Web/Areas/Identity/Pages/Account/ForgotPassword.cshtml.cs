@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using SocialMedia.Models;
+using SocialMedia.Data.Models;
 
 namespace SocialMedia.Web.Areas.Identity.Pages.Account
 {

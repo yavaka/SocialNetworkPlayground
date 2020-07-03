@@ -1,7 +1,7 @@
 ﻿namespace SocialMedia.Services.Profile
 {
     using Microsoft.AspNetCore.Identity;
-    using SocialMedia.Models;
+    using SocialMedia.Data.Models;
 
     public class ProfileService : IProfileService
     {

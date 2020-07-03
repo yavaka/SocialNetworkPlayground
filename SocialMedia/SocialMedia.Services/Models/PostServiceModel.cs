@@ -2,6 +2,7 @@
 {
     using SocialMedia.Data.Models;
     using SocialMedia.Models.ViewModels;
+    using SocialMedia.Services.TaggedUser;
     using System;
     using System.Collections.Generic;
 
@@ -9,7 +10,6 @@
     {
         public PostServiceModel()
         {
-            this.CurrentUserFriends = new List<UserServiceModel>();
             this.TaggedFriends = new List<UserServiceModel>();
             this.Comments = new List<CommentTagFriendsViewModel>();
         }
@@ -36,10 +36,8 @@
        
         public Group Group { get; set; }////// Change with GroupServiceModel
 
-        public IEnumerable<UserServiceModel> CurrentUserFriends{ get; set; }
+        public ICollection<UserServiceModel> TaggedFriends{ get; set; }
 
-        public IEnumerable<UserServiceModel> TaggedFriends{ get; set; }
-
-        public IEnumerable<CommentTagFriendsViewModel> Comments{ get; set; }////// Change with CommentServiceModel
+        public ICollection<CommentTagFriendsViewModel> Comments{ get; set; }////// Change with CommentServiceModel
     }
 }

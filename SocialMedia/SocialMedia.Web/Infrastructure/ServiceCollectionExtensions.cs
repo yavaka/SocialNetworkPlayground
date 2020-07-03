@@ -3,7 +3,7 @@
     using Data;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.Extensions.DependencyInjection;
-    using Models;
+    using SocialMedia.Data.Models;
 
     public static class ServiceCollectionExtensions
     {
@@ -23,6 +23,12 @@
                 .AddEntityFrameworkStores<SocialMediaDbContext>()
                 .AddDefaultTokenProviders();
 
+            return services;
+        }
+
+        public static IServiceCollection AddSocialMediaServices(this IServiceCollection services)
+        {
+            //Add services
             return services;
         }
     }

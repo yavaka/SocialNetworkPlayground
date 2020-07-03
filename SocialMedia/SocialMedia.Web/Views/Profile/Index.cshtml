@@ -1,4 +1,4 @@
-﻿@model SocialMedia.Models.ViewModels.ProfileViewModel
+﻿@model SocialMedia.Services.Models.ProfileServiceModel
 
 @{
     ViewData["Title"] = "Profile";
@@ -27,7 +27,7 @@
                         <tr></tr>
                         <tr>
                             <td>@Model.CurrentUser.Country</td>
-                            <td>@Model.CurrentUser.DOB</td>
+                            <td>@Model.CurrentUser.DateOfBirth</td>
                         </tr>
                     </tbody>
                 </table>
@@ -60,12 +60,15 @@
 <div class="container posts">
 
     <!-- New Post Btn -->
-    @Html.ActionLink("Add Post", "Create", "Posts", new { invokedFrom = "profile page" }, new { @class = "col-md-12 btn btn-outline-primary", @style = "margin: 20px" })
+    @Html.ActionLink(
+        "Add Post", "Create", "Posts", 
+        new { invokedFrom = "profile page" }, 
+        new { @class = "col-md-12 btn btn-outline-primary", @style = "margin: 20px" })
 
     <!-- Posts -->
     @if (Model.Posts.Count > 0)
     {
-        foreach (var post in Model.Posts.OrderByDescending(d => d.Post.DatePosted))
+        foreach (var post in Model.Posts.OrderByDescending(d => d.DatePosted))
         {
             <div class="media border p-3" style="margin-bottom: 20px;">
                 <img src="img/profile_pic.png" class="mr-3 mt-3 rounded-circle" style="width:60px;">
@@ -73,14 +76,14 @@
                     <!-- Post author and posted on-->
                     <div class="row">
                         <div class="col-md-10">
-                            @if (post.Post.Group != null)
+                            @if (post.Group != null)
                             {
-                                <h5>@Model.CurrentUser.UserName <small><i>Posted in <b>@post.Post.Group.Title</b> on @post.Post.DatePosted.Date</i></small></h5>
+                                <h5>@Model.CurrentUser.UserName <small><i>Posted in <b>@post.Group.Title</b> on @post.DatePosted</i></small></h5>
 
                             }
                             else
                             {
-                                <h5>@Model.CurrentUser.UserName <small><i>Posted on @post.Post.DatePosted.Date</i></small></h5>
+                                <h5>@Model.CurrentUser.UserName <small><i>Posted on @post.DatePosted</i></small></h5>
                             }
                         </div>
                         <!-- Dropdown settings -->
@@ -90,17 +93,23 @@
                             </button>
                             <ul class="dropdown-menu">
                                 <li>
-                                    @Html.ActionLink("Edit", "Edit", "Posts", new { id = post.Post.PostId, invokedFrom = "profile page" }, new { @class = "btn" })
+                                    @Html.ActionLink(
+                                        "Edit", "Edit", "Posts", 
+                                        new { id = post.PostId, invokedFrom = "profile page" }, 
+                                        new { @class = "btn" })
                                 </li>
                                 <li>
-                                    @Html.ActionLink("Delete", "Delete", "Posts", new { id = post.Post.PostId, invokedFrom = "profile page" }, new { @class = "btn" })
+                                    @Html.ActionLink(
+                                        "Delete", "Delete", "Posts", 
+                                        new { id = post.PostId, invokedFrom = "profile page" }, 
+                                        new { @class = "btn" })
                                 </li>
                             </ul>
                         </div>
                     </div>
-                    @if (post.Tagged.Count > 0)
+                    @if (post.TaggedFriends != null)
                     {
-                        foreach (var user in post.Tagged)
+                        foreach (var user in post.TaggedFriends)
                         {
                             <a href="#" class="badge badge-primary">@user.UserName</a>
                         }
@@ -108,18 +117,21 @@
 
 
                     <p style="margin: 15px">
-                        @post.Post.Content
+                        @post.Content
                     </p>
 
                     <hr style="height:1px;border-width:0;color:skyblue;background-color:skyblue">
 
                     <!-- New Comment Btn -->
-                    @Html.ActionLink("Add Comment", "Create", "Comments", new { id = post.Post.PostId, invokedFrom = "profile page" }, new { @class = "btn btn-outline-primary" })
+                    @Html.ActionLink(
+                        "Add Comment", "Create", "Comments", 
+                        new { id = post.PostId, invokedFrom = "profile page" }, 
+                        new { @class = "btn btn-outline-primary" })
 
                     <hr style="height:1px;border-width:0;color:skyblue;background-color:skyblue">
 
                     <!-- Comments -->
-                    @if (post.Comments.Count > 0)
+                    @if (post.Comments != null)
                     {
                         foreach (var comment in post.Comments.OrderByDescending(d => d.Comment.DatePosted))
                         {
@@ -133,7 +145,7 @@
                                                 <h6>@comment.Comment.Author.UserName <small><i>Posted on @comment.Comment.DatePosted</i></small></h6>
 
                                                 <!-- Tagged users -->
-                                                @if (comment.Tagged.Count > 0)
+                                                @if (comment.Tagged != null)
                                                 {
                                                     foreach (var user in comment.Tagged)
                                                     {

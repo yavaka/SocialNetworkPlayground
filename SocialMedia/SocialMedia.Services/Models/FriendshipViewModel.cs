@@ -1,10 +1,11 @@
-﻿using System;
+﻿using SocialMedia.Data.Models;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace SocialMedia.Models.ViewModels
 {
-    public class FriendshipViewModel : IViewModel
+    public class FriendshipViewModel
     {
         public FriendshipViewModel()
         {

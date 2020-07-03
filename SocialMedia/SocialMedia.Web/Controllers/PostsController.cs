@@ -403,7 +403,7 @@
             return View("Edit", ViewModel);
         }
 
-        //TODO:Tag friends service : GetTaggedFriendsByPostIdAndUserId(int postId)
+        //TODO:Tag friends service : GetTaggedFriendsByPostIdAndUserId(int postId, string userId)
         private ICollection<User> GetTaggedFriends(int postId, string userId)
         {
             //TagFriend entities where users are tagged by the current user

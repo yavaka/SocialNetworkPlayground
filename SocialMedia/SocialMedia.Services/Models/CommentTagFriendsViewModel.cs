@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-
-namespace SocialMedia.Models.ViewModels
+﻿namespace SocialMedia.Models.ViewModels
 {
+    using System.Collections.Generic;
     using Services.Models;
+    using SocialMedia.Data.Models;
 
     public class CommentTagFriendsViewModel
     {
@@ -14,7 +14,7 @@ namespace SocialMedia.Models.ViewModels
 
         public ICollection<User> UserFriends { get; set; }
 
-        public IEnumerable<UserServiceModel> Tagged { get; set; }
+        public ICollection<User> Tagged { get; set; }
 
         public string Message { get; set; }
     }

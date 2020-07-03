@@ -10,10 +10,11 @@ namespace SocialMedia.Web
     using Microsoft.Extensions.FileProviders;
     using Microsoft.Extensions.Hosting;
     using SocialMedia.Data;
-    using SocialMedia.Models;
     using SocialMedia.Web.Identity;
     using Infrastructure;
     using SocialMedia.Services.TaggedUser;
+    using SocialMedia.Data.Models;
+    using SocialMedia.Services.Post;
 
     public class Startup
     {
@@ -24,7 +25,6 @@ namespace SocialMedia.Web
 
         public void ConfigureServices(IServiceCollection services)
         {
-            // TODO: routing
             services.AddLogging();
             services.AddRazorPages();
             services.AddMvc();
@@ -38,6 +38,7 @@ namespace SocialMedia.Web
             services.AddScoped<IUserClaimsPrincipalFactory<User>, CustomUserClaimsPrincipalFactory>();
 
             services.AddTransient<ITaggedUserService, TaggedUserService>();
+            services.AddTransient<IPostService, PostService>();
 
             // Cookies for Login
             services
@@ -59,12 +60,6 @@ namespace SocialMedia.Web
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseStaticFiles(new StaticFileOptions
-            {
-                FileProvider = new PhysicalFileProvider(
-                    Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")),
-                RequestPath = "/wwwroot"
-            });
 
             app.UseAuthentication();
 

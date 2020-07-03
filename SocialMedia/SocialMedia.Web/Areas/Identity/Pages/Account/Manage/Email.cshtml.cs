@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using SocialMedia.Models;
 using SocialMedia.Data;
 using Microsoft.EntityFrameworkCore;
+using SocialMedia.Data.Models;
 
 namespace SocialMedia.Web.Areas.Identity.Pages.Account.Manage
 {

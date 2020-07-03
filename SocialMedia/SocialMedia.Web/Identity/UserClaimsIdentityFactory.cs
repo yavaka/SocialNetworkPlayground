@@ -1,6 +1,6 @@
 ﻿namespace SocialMedia.Web.Identity
 {
-    using SocialMedia.Models;
+    using SocialMedia.Data.Models;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.Extensions.Options;
     using System.Security.Claims;

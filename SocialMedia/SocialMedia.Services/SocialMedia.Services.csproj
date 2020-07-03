@@ -16,7 +16,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SocialMedia.Data\SocialMedia.Data.csproj" />
-    <ProjectReference Include="..\SocialMedia.Models\SocialMedia.Models.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Group\" />
+    <Folder Include="Friendship\" />
+    <Folder Include="Comment\" />
   </ItemGroup>
 
 </Project>

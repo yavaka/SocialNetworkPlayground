@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using SocialMedia.Data;
+using SocialMedia.Data.Models;
 using SocialMedia.Models;
 namespace SocialMedia.Web.Areas.Identity.Pages.Account.Manage
 {
