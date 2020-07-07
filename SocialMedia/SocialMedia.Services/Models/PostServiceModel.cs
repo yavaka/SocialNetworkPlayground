@@ -2,7 +2,6 @@
 {
     using SocialMedia.Data.Models;
     using SocialMedia.Models.ViewModels;
-    using SocialMedia.Services.TaggedUser;
     using System;
     using System.Collections.Generic;
 
@@ -35,6 +34,8 @@
         public UserServiceModel Author { get; set; }
        
         public Group Group { get; set; }////// Change with GroupServiceModel
+
+        public UserServiceModel CurrentUser { get; set; }
 
         public ICollection<UserServiceModel> TaggedFriends{ get; set; }
 

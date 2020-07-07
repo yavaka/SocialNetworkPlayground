@@ -11,7 +11,7 @@
             this.Posts = new List<PostServiceModel>();
         }
         
-        public UserServiceModel CurrentUser { get; set; }
+        public UserServiceModel User { get; set; }
 
         private ICollection<PostServiceModel> posts; 
         public ICollection<PostServiceModel> Posts 
@@ -27,5 +27,7 @@
                 this.posts = value;
             }
         }
+
+        public string Message{ get; set; }
     }
 }

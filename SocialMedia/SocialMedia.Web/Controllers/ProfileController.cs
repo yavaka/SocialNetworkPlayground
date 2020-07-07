@@ -5,32 +5,39 @@
     using System.Threading.Tasks;
     using SocialMedia.Data.Models;
     using SocialMedia.Services.Models;
-    using SocialMedia.Services.Post;
+    using SocialMedia.Services.Profile;
 
     public class ProfileController : Controller
     {
         private readonly UserManager<User> _userManager;
-        private readonly IPostService _postService;
+        private readonly IProfileService _profileService;
 
         public ProfileController(
             UserManager<User> userManager,
-            IPostService postService)
+            IProfileService profileService)
         {
             this._userManager = userManager;
-            this._postService = postService;
+            this._profileService = profileService;
         }
 
-        private ProfileServiceModel Model { get; set; } = new ProfileServiceModel();
-
         [HttpGet]
-        public async Task<IActionResult> IndexAsync()
+        public async Task<IActionResult> IndexAsync(string userId)
         {
-            this.Model.CurrentUser = new UserServiceModel(
-                await this._userManager.GetUserAsync(User));
-            
-            this.Model.Posts = await this._postService.GetPostsByUserId(Model.CurrentUser.Id);
+            ProfileServiceModel profile;
 
-            return View(Model);
+            if (userId != null)
+            {
+                profile = await this._profileService.GetProfileAsync(userId);
+
+                //Depending on the friendship status it will be generated different layout.
+                profile.Message = TempData["friendshipStatus"].ToString();
+            }
+            else //Gets the current user`s profile
+            {
+                var currentUserId = this._userManager.GetUserId(User);
+                profile = await this._profileService.GetProfileAsync(currentUserId);
+            }
+            return View(profile);
         }
     }
 }

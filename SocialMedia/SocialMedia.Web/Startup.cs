@@ -15,6 +15,8 @@ namespace SocialMedia.Web
     using SocialMedia.Services.TaggedUser;
     using SocialMedia.Data.Models;
     using SocialMedia.Services.Post;
+    using SocialMedia.Services.Friendship;
+    using SocialMedia.Services.Profile;
 
     public class Startup
     {
@@ -39,6 +41,8 @@ namespace SocialMedia.Web
 
             services.AddTransient<ITaggedUserService, TaggedUserService>();
             services.AddTransient<IPostService, PostService>();
+            services.AddTransient<IFriendshipService, FriendshipService>();
+            services.AddTransient<IProfileService, ProfileService>();
 
             // Cookies for Login
             services
