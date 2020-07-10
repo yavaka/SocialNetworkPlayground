@@ -26,7 +26,7 @@
                     await this._userManager
                         .FindByIdAsync(userId)),
                 Posts = await this._postService
-                        .GetPostsByUserId(userId)
+                        .GetPostsByUserIdAsync(userId)
             };
     }
 }

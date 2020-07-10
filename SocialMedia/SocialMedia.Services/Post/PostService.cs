@@ -4,6 +4,7 @@
     using SocialMedia.Data;
     using SocialMedia.Data.Models;
     using SocialMedia.Services.Models;
+    using SocialMedia.Services.TaggedUser;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -11,18 +12,38 @@
     public class PostService : IPostService
     {
         private readonly SocialMediaDbContext _data;
+        private readonly ITaggedUserService _taggedUserService;
 
-        public PostService(SocialMediaDbContext data)
+        public PostService(
+            SocialMediaDbContext data,
+            ITaggedUserService taggedUserService)
         {
             this._data = data;
+            this._taggedUserService = taggedUserService;
         }
 
-        public async Task<Post> GetPostByIdAsync(int postId)
-            => await this._data.Posts
-                .Include(c => c.Comments)
-                .Include(g => g.Group)
-                .Include(t => t.TaggedUsers)
-                .FirstOrDefaultAsync(i => i.PostId == postId);
+        public async Task<EntityState> AddPost(PostServiceModel serviceModel)
+        {
+            var post = new Post
+            {
+                Content = serviceModel.Content,
+                DatePosted = serviceModel.DatePosted,
+                AuthorId = serviceModel.Author.Id,
+                TaggedUsers = this._taggedUserService.GetTagFriendsEntities(
+                    serviceModel.Author.Id,
+                    serviceModel.TaggedFriends.Select(i => i.Id).ToList())
+            };
+
+            if (serviceModel.Group != null)
+            {
+                post.GroupId = serviceModel.Group.GroupId;
+            }
+
+            await this._data.Posts.AddAsync(post);
+            await this._data.SaveChangesAsync();
+
+            return EntityState.Added;
+        }
 
         public async Task<ICollection<PostServiceModel>> GetPostsByUserIdAsync(string userId)
         {

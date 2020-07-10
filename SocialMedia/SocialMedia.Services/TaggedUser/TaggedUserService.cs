@@ -6,6 +6,7 @@
     using Data;
     using Microsoft.EntityFrameworkCore;
     using Models;
+    using SocialMedia.Data.Models;
 
     public class TaggedUserService : ITaggedUserService
     {
@@ -13,15 +14,29 @@
 
         public TaggedUserService(SocialMediaDbContext data) => this._data = data;
 
-        public async Task<ICollection<UserServiceModel>> GetTaggedUsersAsync(IEnumerable<string> tagFriendIds)
+        public ICollection<TagFriends> GetTagFriendsEntities(string taggerId, IEnumerable<string> taggedFriendsIds)
+        {
+            var entities = new List<TagFriends>();
+            foreach (var taggedId in taggedFriendsIds)
+            {
+                entities.Add(new TagFriends 
+                {
+                    TaggerId = taggerId,
+                    TaggedId = taggedId
+                });
+            }
+            return entities;
+        }
+
+        public async Task<ICollection<UserServiceModel>> GetTaggedFriendsByPostIdAsync(int postId)
         => await this._data
-              .Users
-              .Where(u => tagFriendIds.Contains(u.Id))
+              .TagFriends
+              .Where(i => i.PostId == postId)
               .Select(u => new UserServiceModel
               {
-                  Id = u.Id,
-                  UserName = u.UserName,
-                  FullName = u.FullName
+                  Id = u.TaggedId,
+                  UserName = u.Tagged.UserName,
+                  FullName = u.Tagged.FullName
               })
               .ToListAsync();
     }

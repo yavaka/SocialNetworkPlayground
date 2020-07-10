@@ -17,7 +17,10 @@
     <div class="col-md-2"><a asp-controller="Groups" asp-action="GroupMembers" asp-route-id="@Model.Group.GroupId">Members</a></div>
     <div class="col-md-8"></div>
     <div class="col-md-2">
-        <button>@Html.ActionLink("Leave group", "LeaveGroup", "Groups", new { id = Model.Group.GroupId })</button>
+        <button>
+            @Html.ActionLink("Leave group", "LeaveGroup", "Groups")
+            @{TempData.Add("Group", Model.Group);}
+        </button>
     </div>
 </div>
 <hr />

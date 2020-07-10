@@ -130,8 +130,7 @@ Model.Message == "1")
         {
             <!-- New Post Btn -->
             @Html.ActionLink(
-                    "Add Post", "Create", "Posts",
-                    new { invokedFrom = "profile page" },
+                    "Add Post", "Create", "Posts", null,
                     new { @class = "col-md-12 btn btn-outline-primary", @style = "margin: 20px" })
         }
 

@@ -3,7 +3,6 @@
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
-    using SocialMedia.Data;
     using SocialMedia.Data.Models;
     using SocialMedia.Models.ViewModels;
     using SocialMedia.Services.Friendship;
