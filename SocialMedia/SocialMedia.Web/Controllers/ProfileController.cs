@@ -25,6 +25,8 @@
         {
             ProfileServiceModel profile;
 
+            var currentUserId = this._userManager.GetUserId(User);
+            
             if (userId != null)
             {
                 profile = await this._profileService.GetProfileAsync(userId);
@@ -34,7 +36,6 @@
             }
             else //Gets the current user`s profile
             {
-                var currentUserId = this._userManager.GetUserId(User);
                 profile = await this._profileService.GetProfileAsync(currentUserId);
             }
             return View(profile);

@@ -58,7 +58,7 @@
 <div class="container">
     <!-- Model.Message represents the friendship status -->
     @if (Model.Message == null ||
-   Model.Message == "1")
+Model.Message == "1")
     {
         <ul class="nav" style="margin: 0, auto;">
             <li class="nav-item col-md-3">
@@ -155,26 +155,29 @@ Model.Message == "1")
                                     <h5>@Model.User.UserName <small><i>Posted on @post.DatePosted</i></small></h5>
                                 }
                             </div>
-                            <!-- Dropdown settings -->
-                            <div class="col-md-2 dropdown">
-                                <button class="btn btn-outline-primary" data-toggle="dropdown" role="menu" aria-expanded="false" style="cursor:pointer">
-                                    <img width="25" height="25" src="https://img.icons8.com/ultraviolet/40/000000/settings.png" />
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        @Html.ActionLink(
-                         "Edit", "Edit", "Posts",
-                         new { id = post.PostId, invokedFrom = "profile page" },
-                         new { @class = "btn" })
-                                    </li>
-                                    <li>
-                                        @Html.ActionLink(
-                         "Delete", "Delete", "Posts",
-                         new { id = post.PostId, invokedFrom = "profile page" },
-                         new { @class = "btn" })
-                                    </li>
-                                </ul>
-                            </div>
+                            @if (Model.Message == null)
+                            {
+                                <!-- Dropdown settings if the post author is current user -->
+                                <div class="col-md-2 dropdown">
+                                    <button class="btn btn-outline-primary" data-toggle="dropdown" role="menu" aria-expanded="false" style="cursor:pointer">
+                                        <img width="25" height="25" src="https://img.icons8.com/ultraviolet/40/000000/settings.png" />
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            @Html.ActionLink(
+                             "Edit", "Edit", "Posts",
+                             new { id = post.PostId, invokedFrom = "profile page" },
+                             new { @class = "btn" })
+                                        </li>
+                                        <li>
+                                            @Html.ActionLink(
+                             "Delete", "Delete", "Posts",
+                             new { id = post.PostId, invokedFrom = "profile page" },
+                             new { @class = "btn" })
+                                        </li>
+                                    </ul>
+                                </div>
+                            }
                         </div>
                         @if (post.TaggedFriends != null)
                         {
