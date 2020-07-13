@@ -11,21 +11,26 @@
     using SocialMedia.Web.Infrastructure;
     using SocialMedia.Services.Post;
     using System;
+    using SocialMedia.Services.TaggedUser;
+    using System.Linq;
 
     public class PostsController : Controller
     {
         private readonly UserManager<User> _userManager;
         private readonly IFriendshipService _friendshipService;
         private readonly IPostService _postService;
+        private readonly ITaggedUserService _taggedUserService;
 
         public PostsController(
             UserManager<User> userManager,
             IFriendshipService friendshipService,
-            IPostService postService)
+            IPostService postService,
+            ITaggedUserService taggedUserService)
         {
             this._userManager = userManager;
             this._friendshipService = friendshipService;
             this._postService = postService;
+            this._taggedUserService = taggedUserService;
         }
 
 
@@ -81,32 +86,31 @@
         //    return View(ViewModel);
         //}
 
-        // GET: Posts/Create
         [HttpGet]
         public async Task<IActionResult> Create()
         {
             var currentUser = await this._userManager.GetUserAsync(User);
 
-            var postViewModel = new PostViewModel
+            var viewModel = new PostViewModel
             {
                 CurrentUser = new UserServiceModel(currentUser),
             };
 
-            if (TempData.ContainsKey("Group"))
+            if (TempData.ContainsKey("group"))
             {
-                postViewModel.Group = TempData.Get<Group>("Group");
-                TempData.Keep("Group");
+                viewModel.Group = TempData.Get<Group>("group");
+                TempData.Keep("group");
             }
 
             //Locally tagged friends
             if (TempData.ContainsKey("tagFriendsServiceModel"))
             {
-                postViewModel.TagFriends = TempData.Get<TagFriendsServiceModel>("tagFriendsServiceModel");
+                viewModel.TagFriends = TempData.Get<TagFriendsServiceModel>("tagFriendsServiceModel");
                 TempData.Keep("tagFriendsServiceModel");
             }
             else
             {
-                postViewModel.TagFriends = new TagFriendsServiceModel()
+                viewModel.TagFriends = new TagFriendsServiceModel()
                 {
                     UntaggedFriends = await this._friendshipService
                             .GetFriendsAsync(currentUser.Id),
@@ -114,18 +118,17 @@
                 };
                 TempData.Set<TagFriendsServiceModel>(
                     "tagFriendsServiceModel",
-                    postViewModel.TagFriends);
+                    viewModel.TagFriends);
             }
 
             if (!TempData.ContainsKey("invokedFrom"))
             {
-                TempData["invokedFrom"] = "Create";
+                TempData.Set("invokedFrom", "Create");
             }
 
-            return View(postViewModel);
+            return View(viewModel);
         }
 
-        // POST: Posts/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PostViewModel viewModel)
@@ -156,6 +159,8 @@
                         TaggedFriends = viewModel.TagFriends.TaggedFriends
                     });
 
+                TempData.Clear();
+
                 if (viewModel.Group != null)
                 {
                     return RedirectToAction("Details", "Groups", new { id = viewModel.Group.GroupId });
@@ -165,91 +170,92 @@
             return View(viewModel);
         }
 
-        ////GET: Posts/Edit/5
-        //public async Task<IActionResult> Edit(int? id, string invokedFrom)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
+        [HttpGet]
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-        //    var post = await _context.Posts.FindAsync(id);
-        //    if (post == null)
-        //    {
-        //        return NotFound();
-        //    }
+            var post = await this._postService.GetPost((int)id);
 
-        //    var user = await this._userManager.GetUserAsync(User);
+            if (post == null)
+            {
+                return NotFound();
+            }
 
-        //    ViewModel = new PostTagFriendsViewModel();
-        //    ViewModel.CurrentUser = user;
-        //    ViewModel.Post = post;
-        //    ViewModel.Tagged = GetTaggedFriends(post.PostId, user.Id);
-        //    /*If this method is invoked before GetTaggedFriends, 
-        //      there will add all of the current user`s friends.
-        //      Let`s get that user x is already tagged from the creation of the post.
-        //      It does not make sense the current user to be allowed to tag user x twice.*/
-        //    ViewModel.UserFriends = GetUserFriends(user);
-        //    ViewModel.Message = invokedFrom;
+            var viewModel = new PostViewModel(post);
 
-        //    return View(ViewModel);
-        //}
+            viewModel.CurrentUser = new UserServiceModel(
+                await this._userManager.GetUserAsync(User));
 
-        //// POST: Posts/Edit/5
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Edit([FromForm]PostTagFriendsViewModel viewModel)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        try
-        //        {
-        //            var user = await this._userManager.GetUserAsync(User);
-        //            ViewModel.CurrentUser = user;
 
-        //            var post = await this._context.Posts
-        //                .Include(i => i.TaggedUsers)
-        //                .FirstOrDefaultAsync(i => i.PostId == viewModel.Post.PostId);
+            var friends = await this._friendshipService
+                .GetFriendsAsync(viewModel.CurrentUser.Id);
 
-        //            post.Author = user;
-        //            post.AuthorId = user.Id;
-        //            post.Content = viewModel.Post.Content;
+            if (post.TaggedFriends.Count > 0)
+            {
+                viewModel.TagFriends = new TagFriendsServiceModel
+                {
+                    UntaggedFriends = this._taggedUserService
+                        .GetUntaggedFriends(post.TaggedFriends, friends),
+                    TaggedFriends = post.TaggedFriends,
+                };
+            }
+            else
+            {
+                viewModel.TagFriends = new TagFriendsServiceModel
+                {
+                    UntaggedFriends = await this._friendshipService
+                        .GetFriendsAsync(viewModel.CurrentUser.Id),
+                    TaggedFriends = new List<UserServiceModel>(),
+                };
+            }
 
-        //            //Local tag friend entities
-        //            var tagFriendEntities = TagFriendEntities(post);
-        //            //Connected tag friend entities (In the db)
-        //            var postTagFriendEntities = post.TaggedUsers;
-        //            //If there is a mismatch between any record in the Local collection will be deleted from the Connected collection 
-        //            RemoveTaggedFriendRecords(postTagFriendEntities, tagFriendEntities);
-        //            //If there is a mismatch between any record in the Connected collection will be added from the Local collection 
-        //            AddLocalTaggedFriends(postTagFriendEntities, tagFriendEntities);
+            if (!TempData.ContainsKey("invokedFrom"))
+            {
+                TempData.Set("invokedFrom", "Edit");
+            }
 
-        //            await _context.SaveChangesAsync();
-        //        }
-        //        catch (DbUpdateConcurrencyException)
-        //        {
-        //            if (!PostExists(viewModel.Post.PostId))
-        //            {
-        //                return NotFound();
-        //            }
-        //            else
-        //            {
-        //                throw;
-        //            }
-        //        }
+            return View(viewModel);
+        }
 
-        //        if (ViewModel.Message == "profile page")
-        //        {
-        //            ViewModel = new PostTagFriendsViewModel();
-        //            return RedirectToAction("Index", "Profile");
-        //        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(PostViewModel viewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                //Get locally tagged friends
+                if (TempData.ContainsKey("tagFriendsServiceModel"))
+                {
+                    viewModel.TagFriends = TempData.Get<TagFriendsServiceModel>("tagFriendsServiceModel");
+                }
 
-        //        ViewModel = new PostTagFriendsViewModel();
-        //        return RedirectToAction(nameof(UserPosts));
-        //    }
+                //Get group where the post is going to be created
+                if (TempData.ContainsKey("Group"))
+                {
+                    viewModel.Group = TempData.Get<Group>("Group");
+                }
 
-        //    return View(viewModel);
-        //}
+                await this._postService
+                    .EditPost(new PostServiceModel
+                    {
+                        PostId = viewModel.PostId,
+                        Content = viewModel.Content
+                    });
+
+                TempData.Clear();
+
+                if (viewModel.Group != null)
+                {
+                    return RedirectToAction("Details", "Groups", new { id = viewModel.Group.GroupId });
+                }
+                return RedirectToAction("Index", "Profile");
+            }
+            return View(viewModel);
+        }
 
         ////TODO: The DELETE statement conflicted with the REFERENCE constraint "TagFriendsToPost_FK". The conflict occurred in database "SocialMedia", table "dbo.TagFriends", column 'PostId'.
         //// GET: Posts/Delete/5

@@ -29,8 +29,8 @@
 
         public Group Group { get; set; }
 
-        public UserServiceModel CurrentUser { get; set; }
-
         public TagFriendsServiceModel TagFriends{ get; set; }
+
+        public UserServiceModel CurrentUser { get; set; }
     }
 }

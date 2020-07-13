@@ -22,10 +22,10 @@
             @{TempData.Add("Group", Model.Group);}
         </button>
     </div>
+
+    <!--Group posts-->
 </div>
 <hr />
-
-<!--Group posts-->
 <div class="container">
     <div class="jumbotron">
         <button>@Html.ActionLink("Create post", "Create", "Posts", new { id = Model.Group.GroupId })</button>

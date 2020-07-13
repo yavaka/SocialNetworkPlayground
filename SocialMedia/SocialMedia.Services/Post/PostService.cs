@@ -31,7 +31,9 @@
                 AuthorId = serviceModel.Author.Id,
                 TaggedUsers = this._taggedUserService.GetTagFriendsEntities(
                     serviceModel.Author.Id,
-                    serviceModel.TaggedFriends.Select(i => i.Id).ToList())
+                    serviceModel.TaggedFriends
+                        .Select(i => i.Id)
+                        .ToList())
             };
 
             if (serviceModel.Group != null)
@@ -45,9 +47,39 @@
             return EntityState.Added;
         }
 
-        public async Task<ICollection<PostServiceModel>> GetPostsByUserIdAsync(string userId)
+        public async Task<EntityState> EditPost(PostServiceModel serviceModel)
         {
-            var posts = await this._data
+            var post = await this._data.Posts
+                .FirstOrDefaultAsync(i => i.PostId == serviceModel.PostId);
+
+            post.Content = serviceModel.Content;
+
+            this._data.Update(post);
+            await this._data.SaveChangesAsync();
+
+            return EntityState.Modified;
+        }
+
+        public async Task<PostServiceModel> GetPost(int id)
+        {
+           var post = await this._data.Posts.Select(p =>
+                 new PostServiceModel
+                 {
+                     PostId = p.PostId,
+                     Content = p.Content,
+                     DatePosted = p.DatePosted,
+                     Author = new UserServiceModel(p.Author),
+                     Group = p.Group,
+                     TaggedFriends = p.TaggedUsers
+                            .Select(t => new UserServiceModel(t.Tagged))
+                            .ToList()
+                 }).FirstOrDefaultAsync(i => i.PostId == id);
+
+            return post;
+        }
+
+        public async Task<ICollection<PostServiceModel>> GetPostsByUserIdAsync(string userId)
+        => await this._data
                   .Posts
                   .Where(i => i.AuthorId == userId)
                   .Select(p => new PostServiceModel
@@ -57,13 +89,11 @@
                       DatePosted = p.DatePosted,
                       Author = new UserServiceModel(p.Author),
                       Group = p.Group,
-                      TaggedFriends = (ICollection<UserServiceModel>)p.TaggedUsers
-                            .Select(t => new UserServiceModel(t.Tagged)),
+                      TaggedFriends = p.TaggedUsers
+                            .Select(t => new UserServiceModel(t.Tagged))
+                            .ToList(),
                   })
                   .ToListAsync();
-
-            return posts;
-        }
 
         #region ExtractToCommentService
 

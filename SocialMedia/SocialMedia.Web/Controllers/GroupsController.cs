@@ -10,6 +10,7 @@ namespace SocialMedia.Web.Controllers
     using SocialMedia.Data;
     using SocialMedia.Data.Models;
     using SocialMedia.Models.ViewModels;
+    using SocialMedia.Web.Infrastructure;
 
     public class GroupsController : Controller
     {
@@ -139,6 +140,7 @@ namespace SocialMedia.Web.Controllers
                 }
             }
 
+            TempData["group"] = ViewModel.Group;
             return View(ViewModel);
         }
 
