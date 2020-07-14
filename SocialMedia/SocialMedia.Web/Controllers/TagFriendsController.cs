@@ -26,23 +26,37 @@
         public IActionResult AddTaggedFriendLocal(string taggedId)
         {
             var serviceModel = TempData.Get<TagFriendsServiceModel>("tagFriendsServiceModel");
-            var invokedFrom = TempData
-                .Get<string>("invokedFrom")
-                .Trim('"');
+
+            var actionName = string.Empty;
+            var controllersName = string.Empty;
+            if (TempData.ContainsKey("Posts"))
+            {
+                controllersName = "Posts";
+                actionName = TempData
+                    .Get<string>("Posts")
+                    .Trim('"');
+            }
+            else if (TempData.ContainsKey("Comments"))
+            {
+                controllersName = "Comments";
+                actionName = TempData
+                    .Get<string>("Comments")
+                    .Trim('"');
+            }
 
             //Check is the last tagged friend is already been tagged.
             if (serviceModel.TaggedFriends.Count > 0 &&
                 serviceModel.TaggedFriends.Last().Id == taggedId)
             {
                 return RedirectToAction(
-                    invokedFrom,
-                    "Posts");
+                    actionName,
+                    controllersName,
+                    new { postId = serviceModel.PostId });
             }
 
             //Adds tagged user in tagged collection of the view model
             var taggedFriend = new UserServiceModel(
-                this._userManager
-                    .Users
+                this._userManager.Users
                         .FirstOrDefault(i => i.Id == taggedId));
 
             serviceModel.TaggedFriends.Add(taggedFriend);
@@ -58,8 +72,9 @@
             TempData["tagFriendsServiceModel"] = JsonConvert.SerializeObject(serviceModel);
 
             return RedirectToAction(
-                invokedFrom,
-                "Posts");
+                actionName,
+                controllersName,
+                new { postId = serviceModel.PostId });
         }
 
         public async Task<IActionResult> TagFriendAsync(string taggedId, int? postId)
@@ -75,7 +90,7 @@
             await this._taggedUserService.TagFriend(taggerId, taggedId, (int)postId);
 
             var invokedFrom = TempData
-               .Get<string>("invokedFrom")
+               .Get<string>("Posts")
                .Trim('"');
 
             return RedirectToAction(
@@ -95,7 +110,7 @@
             await this._taggedUserService.RemoveTaggedFriend(taggedId, (int)postId);
 
             var invokedFrom = TempData
-               .Get<string>("invokedFrom")
+               .Get<string>("Posts")
                .Trim('"');
 
             return RedirectToAction(
@@ -103,7 +118,5 @@
                 "Posts",
                 new { id = postId });
         }
-
-        //public IActionResult AddTaggedFriendLocal(CommentViewModel viewModel, string taggedId, string invokedFrom)
     }
 }

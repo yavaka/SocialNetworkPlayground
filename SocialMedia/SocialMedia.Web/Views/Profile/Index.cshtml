@@ -197,7 +197,7 @@ Model.Message == "1")
                         <!-- New Comment Btn -->
                         @Html.ActionLink(
                          "Add Comment", "Create", "Comments",
-                         new { id = post.PostId, invokedFrom = "profile page" },
+                         new { postId = post.PostId },
                          new { @class = "btn btn-outline-primary" })
 
                         <hr style="height:1px;border-width:0;color:skyblue;background-color:skyblue">

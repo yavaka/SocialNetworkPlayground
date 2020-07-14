@@ -6,6 +6,7 @@
     using SocialMedia.Data.Models;
     using SocialMedia.Services.Models;
     using SocialMedia.Services.Profile;
+    using SocialMedia.Web.Infrastructure;
 
     public class ProfileController : Controller
     {
@@ -32,7 +33,8 @@
                 profile = await this._profileService.GetProfileAsync(userId);
 
                 //Depending on the friendship status it will be generated different layout.
-                profile.Message = TempData["friendshipStatus"].ToString();
+                profile.Message = TempData.Get<string>("friendshipStatus");
+                TempData.Set("userId", profile.User.Id);
             }
             else //Gets the current user`s profile
             {

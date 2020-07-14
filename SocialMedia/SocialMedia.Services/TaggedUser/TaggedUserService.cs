@@ -4,7 +4,6 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Data;
-    using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
     using Models;
     using SocialMedia.Data.Models;

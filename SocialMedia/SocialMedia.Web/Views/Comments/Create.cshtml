@@ -1,5 +1,4 @@
-﻿@using System.Text
-@model SocialMedia.Models.ViewModels.CommentTagFriendsViewModel
+﻿@model SocialMedia.Web.Models.CommentViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -10,32 +9,32 @@
 
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create" method="post">
+        <form asp-controller="Comments">
+            <!--Comment model-->
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                @if (Model.Tagged.Count > 0)
+                @*--Tagged users--*@
+                @if (Model.TagFriends.TaggedFriends.Count > 0)
                 {
-                    var sb = new StringBuilder();
-                    sb.Append(Model.CurrentUser.UserName + "is with");
-                    foreach (var user in Model.Tagged)
+                    <label>@Model.Author.UserName </label>
+                    foreach (var user in Model.TagFriends.TaggedFriends)
                     {
-                        sb.Append($" {user.UserName},");
+
+                        <a href="#" class="badge badge-primary">@user.UserName </a>
                     }
-                    var result = sb.ToString().TrimEnd(',');
-                    <label>@result</label>
                 }
                 else
                 {
-                    <label>@Model.CurrentUser.UserName</label>
+                    <label>@Model.Author.UserName</label>
                 }
-                <input asp-for="@Model.Comment.Content" class="form-control" />
-                <span asp-validation-for="@Model.Comment.Content" class="text-danger"></span>
+                <input asp-for="@Model.Content" class="form-control" />
+                <span asp-validation-for="@Model.Content" class="text-danger"></span>
+                <input type="hidden" asp-for="@Model.PostId" class="form-control" />
             </div>
 
             <!--Tag friends-->
             <div>
                 <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Tag Friends</button>
-                <!-- Modal -->
                 <div class="modal fade" id="myModal" role="dialog">
                     <div class="modal-dialog modal-sm">
                         <div class="modal-content">
@@ -44,18 +43,22 @@
                             </div>
                             <div class="modal-body">
                                 <ul>
-                                    @if (Model.UserFriends.Count == 0)
+                                    @if (Model.TagFriends.UntaggedFriends.Count == 0)
                                     {
                                         <li>
-                                            @Model.CurrentUser.UserName, you do not have any more friends.
+                                            @Model.Author.UserName, you do not have any more friends.
                                         </li>
                                     }
                                     else
                                     {
-                                        @foreach (var user in Model.UserFriends)
+                                        @foreach (var user in Model.TagFriends.UntaggedFriends)
                                         {
                                             <li>
-                                                @Html.ActionLink(user.UserName, "TagFriend", "Comments", new { taggedId = user.Id, viewName = "Create" })
+                                                @Html.ActionLink(
+                                               user.UserName,
+                                               "AddTaggedFriendLocal",
+                                               "TagFriends",
+                                               new { taggedId = user.Id })
                                             </li>
                                         }
                                     }

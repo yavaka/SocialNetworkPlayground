@@ -16,6 +16,7 @@ namespace SocialMedia.Web
     using SocialMedia.Services.Post;
     using SocialMedia.Services.Friendship;
     using SocialMedia.Services.Profile;
+    using SocialMedia.Services.Comment;
 
     public class Startup
     {
@@ -42,7 +43,7 @@ namespace SocialMedia.Web
             services.AddTransient<IPostService, PostService>();
             services.AddTransient<IFriendshipService, FriendshipService>();
             services.AddTransient<IProfileService, ProfileService>();
-
+            services.AddTransient<ICommentService, CommentService>();
             // Cookies for Login
             services
                 .ConfigureApplicationCookie(options => options

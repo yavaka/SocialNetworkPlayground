@@ -12,7 +12,6 @@
     using SocialMedia.Services.Post;
     using System;
     using SocialMedia.Services.TaggedUser;
-    using System.Linq;
 
     public class PostsController : Controller
     {
@@ -32,59 +31,6 @@
             this._postService = postService;
             this._taggedUserService = taggedUserService;
         }
-
-
-        //#region Posts
-
-        //// GET: UserPosts
-        //public async Task<IActionResult> UserPosts()
-        //{
-        //    var user = await this._userManager.GetUserAsync(User);
-
-        //    TempData["userPost"] = "true";
-
-        //    var posts = await _context.Posts
-        //        .Where(a => a.AuthorId == user.Id && a.GroupId == null)
-        //        .ToListAsync();
-
-        //    return View(posts);
-        //}
-        //#endregion
-
-        //// GET: Posts/Details/5
-        //public async Task<IActionResult> Details(int? id)
-        //{
-        //    var user = await this._userManager.GetUserAsync(User);
-
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    //Gets the post and its tag friend entities
-        //    var post = await _context.Posts
-        //        .Include(i => i.TaggedUsers)
-        //        .Include(i => i.Author)
-        //        .FirstOrDefaultAsync(m => m.PostId == id);
-
-        //    if (post == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    ViewModel = new PostTagFriendsViewModel()
-        //    {
-        //        CurrentUser = user,
-        //        Post = post,
-        //        Tagged = GetTaggedFriends(post.PostId, user.Id)
-        //    };
-
-
-        //    //Pass current postId to CommentsController
-        //    TempData["postId"] = id;
-
-        //    return View(ViewModel);
-        //}
 
         [HttpGet]
         public async Task<IActionResult> Create()
@@ -121,9 +67,9 @@
                     viewModel.TagFriends);
             }
 
-            if (!TempData.ContainsKey("invokedFrom"))
+            if (!TempData.ContainsKey("Posts"))
             {
-                TempData.Set("invokedFrom", "Create");
+                TempData.Set("Posts", "Create");
             }
 
             return View(viewModel);
@@ -142,9 +88,9 @@
                 }
 
                 //Get group where the post is going to be created
-                if (TempData.ContainsKey("Group"))
+                if (TempData.ContainsKey("group"))
                 {
-                    viewModel.Group = TempData.Get<Group>("Group");
+                    viewModel.Group = TempData.Get<Group>("group");
                 }
 
                 var currentUser = await this._userManager.GetUserAsync(User);
@@ -167,7 +113,7 @@
                 }
                 return RedirectToAction("Index", "Profile");
             }
-            return View(viewModel);
+            return View();
         }
 
         [HttpGet]
@@ -213,9 +159,9 @@
                 };
             }
 
-            if (!TempData.ContainsKey("invokedFrom"))
+            if (!TempData.ContainsKey("Posts"))
             {
-                TempData.Set("invokedFrom", "Edit");
+                TempData.Set("Posts", "Edit");
             }
 
             return View(viewModel);
@@ -234,9 +180,9 @@
                 }
 
                 //Get group where the post is going to be created
-                if (TempData.ContainsKey("Group"))
+                if (TempData.ContainsKey("group"))
                 {
-                    viewModel.Group = TempData.Get<Group>("Group");
+                    viewModel.Group = TempData.Get<Group>("group");
                 }
 
                 await this._postService
@@ -256,6 +202,11 @@
             }
             return View(viewModel);
         }
+
+
+
+
+
 
         ////TODO: The DELETE statement conflicted with the REFERENCE constraint "TagFriendsToPost_FK". The conflict occurred in database "SocialMedia", table "dbo.TagFriends", column 'PostId'.
         //// GET: Posts/Delete/5
@@ -313,12 +264,6 @@
         //}
 
         //#endregion
-
-
-
-
-
-
 
         ////TODO: Comments service: GetCommentsTaggedUsers(Collection of Comments)
         //private ICollection<TagFriends> GetCommentsTagFriendEntities(ICollection<Comment> postComments)

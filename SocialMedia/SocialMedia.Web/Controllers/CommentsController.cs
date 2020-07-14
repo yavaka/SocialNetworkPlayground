@@ -10,23 +10,34 @@
     using SocialMedia.Data;
     using SocialMedia.Data.Models;
     using SocialMedia.Models.ViewModels;
-    
+    using SocialMedia.Web.Models;
+    using SocialMedia.Services.Models;
+    using SocialMedia.Web.Infrastructure;
+    using SocialMedia.Services.Friendship;
+    using SocialMedia.Services.Comment;
+
     public class CommentsController : Controller
     {
         private readonly SocialMediaDbContext _context;
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
+        private readonly IFriendshipService _friendshipService;
+        private readonly ICommentService _commentService;
 
         private static int _postId = 0;
         private static CommentTagFriendsViewModel ViewModel = new CommentTagFriendsViewModel();
 
         public CommentsController(SocialMediaDbContext context,
             SignInManager<User> signInManager,
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            IFriendshipService friendshipService,
+            ICommentService commentService)
         {
             _context = context;
             _signInManager = signInManager;
             _userManager = userManager;
+            this._friendshipService = friendshipService;
+            this._commentService = commentService;
         }
 
         #region CRUD
@@ -67,70 +78,92 @@
             return View(commentViewModels);
         }
 
-        // GET: Comments/Create
-        public async Task<IActionResult> Create(int? id, string invokedFrom)
+        [HttpGet]
+        public async Task<IActionResult> Create(int? postId)
         {
-            if (id != null)
+            if (postId == null)
             {
-                _postId = (int)id;
+                return NotFound();
             }
 
-            var user = await this._userManager.GetUserAsync(User);
+            var currentUser = await this._userManager.GetUserAsync(User);
 
-            ViewModel = new CommentTagFriendsViewModel()
+            var viewModel = new CommentViewModel
             {
-                CurrentUser = user,
-                UserFriends = GetUserFriends(user),
-                Message = invokedFrom
+                Author = new UserServiceModel(currentUser),
+                PostId = (int)postId
             };
 
-            return View(ViewModel);
+            //Locally tagged friends
+            if (TempData.ContainsKey("tagFriendsServiceModel"))
+            {
+                viewModel.TagFriends = TempData.Get<TagFriendsServiceModel>("tagFriendsServiceModel");
+                TempData.Keep("tagFriendsServiceModel");
+            }
+            else
+            {
+                viewModel.TagFriends = new TagFriendsServiceModel()
+                {
+                    UntaggedFriends = await this._friendshipService
+                            .GetFriendsAsync(currentUser.Id),
+                    TaggedFriends = new List<UserServiceModel>(),
+                    PostId = postId
+                };
+                TempData.Set<TagFriendsServiceModel>(
+                    "tagFriendsServiceModel",
+                    viewModel.TagFriends);
+            }
+
+            if (!TempData.ContainsKey("Comments"))
+            {
+                TempData.Set("Comments", "Create");
+            }
+
+            return View(viewModel);
         }
 
-        // POST: Comments/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([FromForm]CommentTagFriendsViewModel viewModel)
+        public async Task<IActionResult> Create(CommentViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
-                //Get current user
-                var user = await this._userManager.GetUserAsync(User);
-                ViewModel.CurrentUser = user;
-                var comment = new Comment()
+                //Get locally tagged friends
+                if (TempData.ContainsKey("tagFriendsServiceModel"))
                 {
-                    Author = user,
-                    AuthorId = user.Id,
-                    DatePosted = DateTime.Now,
-                    Content = viewModel.Comment.Content,
-                    TaggedUsers = TagFriendEntities()
-
-                };
-
-                //Get the post
-                var post = await this._context.Posts.FirstOrDefaultAsync(i => i.PostId == _postId);
-
-                if (post == null)
-                {
-                    return NotFound();
+                    viewModel.TagFriends = TempData.Get<TagFriendsServiceModel>("tagFriendsServiceModel");
                 }
 
-                comment.CommentedPost = post;
-                comment.CommentedPostId = post.PostId;
+                var currentUserId = this._userManager.GetUserId(User);
 
-                this._context.Comments.Add(comment);
-                await _context.SaveChangesAsync();
+                await this._commentService
+                    .AddComment(new CommentServiceModel
+                    {
+                        Content = viewModel.Content,
+                        DatePosted = DateTime.Now,
+                        AuthorId = currentUserId,
+                        PostId = viewModel.PostId,
+                        TaggedFriends = viewModel.TagFriends.TaggedFriends
+                    });
 
-                if (ViewModel.Message == "profile page")
+                if (TempData.ContainsKey("group"))
                 {
-                    ViewModel = new CommentTagFriendsViewModel();
-                    return RedirectToAction("Index", "Profile");
+                    var group = TempData.Get<Group>("group");
+                    TempData.Clear();
+                    return RedirectToAction(
+                        "Details", "Groups", new { groupId = group.GroupId });
+
                 }
 
-                ViewModel = new CommentTagFriendsViewModel();
-                return RedirectToAction(nameof(Index));
+                if (TempData.ContainsKey("userId"))
+                {
+                    var userId = TempData.Get<string>("userId");
+                    TempData.Clear();
+                    return RedirectToAction("Index", "Profile", new { userId = userId });
+                }
+                return RedirectToAction("Index", "Profile");
             }
-            return View(viewModel);
+            return View();
         }
 
         // GET: Comments/Edit/5
