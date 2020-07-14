@@ -18,6 +18,9 @@
         public IActionResult Index()
         {
             LoggerInformation(Request.GetDisplayUrl());
+
+            //It is requered becuase the browser cache last records
+            TempData.Clear();
             return View();
         }
         

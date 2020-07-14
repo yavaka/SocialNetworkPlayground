@@ -3,6 +3,8 @@
     using SocialMedia.Data.Models;
     using SocialMedia.Services.Models;
     using System;
+    using System.Collections;
+    using System.Collections.Generic;
 
     public class PostViewModel
     {

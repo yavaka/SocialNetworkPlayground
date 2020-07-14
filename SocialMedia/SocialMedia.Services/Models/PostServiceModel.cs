@@ -1,16 +1,16 @@
 ﻿namespace SocialMedia.Services.Models
 {
     using SocialMedia.Data.Models;
-    using SocialMedia.Models.ViewModels;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     public class PostServiceModel
     {
         public PostServiceModel()
         {
             this.TaggedFriends = new List<UserServiceModel>();
-            this.Comments = new List<CommentTagFriendsViewModel>();
+            this._comments = new List<CommentServiceModel>();
         }
 
         public int PostId{ get; set; }
@@ -25,6 +25,19 @@
 
         public ICollection<UserServiceModel> TaggedFriends{ get; set; }
 
-        public ICollection<CommentTagFriendsViewModel> Comments{ get; set; }////// Change with CommentServiceModel
+        private List<CommentServiceModel> _comments;
+        public ICollection<CommentServiceModel> Comments
+        {
+            get => this._comments; 
+            set 
+            {
+                if (value.Count > 0)
+                {
+                    this._comments = value
+                        .OrderByDescending(d => d.DatePosted)
+                        .ToList();
+                }
+            } 
+        }
     }
 }

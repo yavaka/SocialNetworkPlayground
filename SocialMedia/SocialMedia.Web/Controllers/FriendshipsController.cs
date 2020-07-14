@@ -21,8 +21,6 @@
             this._friendshipService = friendshipService;
         }
 
-        public FriendshipViewModel ViewModel { get; set; }
-
         public async Task<IActionResult> Friends()
         {
             var currentUserId = this._userManager
@@ -45,6 +43,7 @@
             return View(nonFriends);
         }
 
+        [HttpGet]
         public async Task<IActionResult> FriendshipStatus(string userId, string invokedFrom)
         {
             if (userId == null)
@@ -54,23 +53,28 @@
 
             var currentUserId = this._userManager.GetUserId(User);
 
+            if (currentUserId == userId)
+            {
+                return RedirectToAction("Index", "Profile");
+            }
+
             var friendshipStatus = await this._friendshipService
                 .GetFriendshipStatusAsync(currentUserId, userId);
 
             switch (friendshipStatus)
             {
                 case -1:
-                    TempData["friendshipStatus"] = -1;
+                    TempData["friendshipStatus"] = "-1";
                     break;
                 case 0:
                     TempData["friendshipStatus"] = $"{friendshipStatus} {invokedFrom}";
                     break;
                 case 1:
-                    TempData["friendshipStatus"] = friendshipStatus;
+                    TempData["friendshipStatus"] = friendshipStatus.ToString();
                     break;
             }
 
-            return RedirectToAction("Index", "Profile", new { UserId = userId });
+            return RedirectToAction("Index", "Profile", new { userId = userId });
         }
 
         public async Task<IActionResult> FriendRequests()

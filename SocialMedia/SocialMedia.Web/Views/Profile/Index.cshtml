@@ -137,7 +137,7 @@ Model.Message == "1")
         <!-- Posts -->
         @if (Model.Posts.Count > 0)
         {
-            foreach (var post in Model.Posts.OrderByDescending(d => d.DatePosted))
+            foreach (var post in Model.Posts)
             {
                 <div class="media border p-3" style="margin-bottom: 20px;">
                     <img src="img/profile_pic.png" class="mr-3 mt-3 rounded-circle" style="width:60px;">
@@ -155,7 +155,7 @@ Model.Message == "1")
                                     <h5>@Model.User.UserName <small><i>Posted on @post.DatePosted</i></small></h5>
                                 }
                             </div>
-                            @if (Model.Message == null)
+                            @if (Model.CurrentUserId == post.Author.Id)
                             {
                                 <!-- Dropdown settings if the post author is current user -->
                                 <div class="col-md-2 dropdown">
@@ -187,7 +187,6 @@ Model.Message == "1")
                             }
                         }
 
-
                         <p style="margin: 15px">
                             @post.Content
                         </p>
@@ -203,9 +202,9 @@ Model.Message == "1")
                         <hr style="height:1px;border-width:0;color:skyblue;background-color:skyblue">
 
                         <!-- Comments -->
-                        @if (post.Comments != null)
+                        @if (post.Comments.Count > 0)
                         {
-                            foreach (var comment in post.Comments.OrderByDescending(d => d.Comment.DatePosted))
+                            foreach (var comment in post.Comments)
                             {
                                 <div class="container mt-3">
                                     <div class="media border p-3">
@@ -214,26 +213,26 @@ Model.Message == "1")
                                             <div class="row">
                                                 <div class="col-md-10">
                                                     <!-- Author and posted date-->
-                                                    <h6>@comment.Comment.Author.UserName <small><i>Posted on @comment.Comment.DatePosted</i></small></h6>
+                                                    <h6>@comment.Author.UserName <small><i>Posted on @comment.DatePosted</i></small></h6>
 
                                                     <!-- Tagged users -->
-                                                    @if (comment.Tagged != null)
+                                                    @if (comment.TaggedFriends != null)
                                                     {
-                                                        foreach (var user in comment.Tagged)
+                                                        foreach (var user in comment.TaggedFriends)
                                                         {
                                                             <a href="#" class="badge badge-primary">@user.UserName</a>
                                                         }
                                                     }
                                                 </div>
                                                 <div class="col-md-2">
-                                                    @if (Model.User.Id == comment.Comment.AuthorId)
+                                                    @if (Model.CurrentUserId == comment.Author.Id)
                                                     {
                                                         <button class="btn btn-outline-primary"><img width="15" height="15" src="https://img.icons8.com/ultraviolet/40/000000/settings.png" /></button>
                                                     }
                                                 </div>
                                             </div>
                                             <!-- Content -->
-                                            <p>@comment.Comment.Content</p>
+                                            <p>@comment.Content</p>
                                         </div>
                                     </div>
                                 </div>

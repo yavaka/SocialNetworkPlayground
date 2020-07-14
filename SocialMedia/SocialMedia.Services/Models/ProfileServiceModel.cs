@@ -2,32 +2,33 @@
 {
     using System.Collections.Generic;
     using System.Linq;
-    using System.Net;
 
     public class ProfileServiceModel
     {
         public ProfileServiceModel()
         {
-            this.Posts = new List<PostServiceModel>();
+            this._posts = new List<PostServiceModel>();
         }
-        
+
         public UserServiceModel User { get; set; }
 
-        private ICollection<PostServiceModel> posts; 
-        public ICollection<PostServiceModel> Posts 
+        public string CurrentUserId { get; set; }
+
+        private List<PostServiceModel> _posts;
+        public ICollection<PostServiceModel> Posts
         {
-            get 
+            get => this._posts;
+            set
             {
-                return this.posts
-                    .OrderByDescending(d => d.DatePosted)
-                    .ToList();
-            }
-            set 
-            {
-                this.posts = value;
+                if (value.Count > 0)
+                {
+                    this._posts = value
+                        .OrderByDescending(d => d.DatePosted)
+                        .ToList();
+                }
             }
         }
 
-        public string Message{ get; set; }
+        public string Message { get; set; }
     }
 }

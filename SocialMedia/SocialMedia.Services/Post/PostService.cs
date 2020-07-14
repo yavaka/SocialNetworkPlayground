@@ -3,6 +3,7 @@
     using Microsoft.EntityFrameworkCore;
     using SocialMedia.Data;
     using SocialMedia.Data.Models;
+    using SocialMedia.Services.Comment;
     using SocialMedia.Services.Models;
     using SocialMedia.Services.TaggedUser;
     using System.Collections.Generic;
@@ -13,13 +14,16 @@
     {
         private readonly SocialMediaDbContext _data;
         private readonly ITaggedUserService _taggedUserService;
+        private readonly ICommentService _commentService;
 
         public PostService(
             SocialMediaDbContext data,
-            ITaggedUserService taggedUserService)
+            ITaggedUserService taggedUserService,
+            ICommentService commentService)
         {
             this._data = data;
             this._taggedUserService = taggedUserService;
+            this._commentService = commentService;
         }
 
         public async Task<EntityState> AddPost(PostServiceModel serviceModel)
@@ -62,27 +66,8 @@
 
         public async Task<PostServiceModel> GetPost(int id)
         {
-           var post = await this._data.Posts.Select(p =>
-                 new PostServiceModel
-                 {
-                     PostId = p.PostId,
-                     Content = p.Content,
-                     DatePosted = p.DatePosted,
-                     Author = new UserServiceModel(p.Author),
-                     Group = p.Group,
-                     TaggedFriends = p.TaggedUsers
-                            .Select(t => new UserServiceModel(t.Tagged))
-                            .ToList()
-                 }).FirstOrDefaultAsync(i => i.PostId == id);
-
-            return post;
-        }
-
-        public async Task<ICollection<PostServiceModel>> GetPostsByUserIdAsync(string userId)
-        => await this._data
-                  .Posts
-                  .Where(i => i.AuthorId == userId)
-                  .Select(p => new PostServiceModel
+            var post = await this._data.Posts.Select(p =>
+                  new PostServiceModel
                   {
                       PostId = p.PostId,
                       Content = p.Content,
@@ -90,11 +75,41 @@
                       Author = new UserServiceModel(p.Author),
                       Group = p.Group,
                       TaggedFriends = p.TaggedUsers
-                            .Select(t => new UserServiceModel(t.Tagged))
-                            .ToList(),
-                  })
-                  .ToListAsync();
+                             .Select(t => new UserServiceModel(t.Tagged))
+                             .ToList()
+                  }).FirstOrDefaultAsync(i => i.PostId == id);
 
+            return post;
+        }
+
+        public async Task<ICollection<PostServiceModel>> GetPostsByUserIdAsync(string userId)
+        {
+            var posts = this._data.Posts
+                .Where(i => i.AuthorId == userId)
+                .Select(p => new PostServiceModel
+                {
+                    PostId = p.PostId,
+                    Content = p.Content,
+                    DatePosted = p.DatePosted,
+                    Author = new UserServiceModel(p.Author),
+                    Group = p.Group,
+                    TaggedFriends = p.TaggedUsers
+                        .Select(t => new UserServiceModel(t.Tagged))
+                        .ToList()
+                })
+                .ToList();
+
+            foreach (var post in posts)
+            {
+                post.Comments = await this._commentService
+                    .GetCommentsByPostIdAsync(post.PostId);
+            }
+
+            //posts.ForEach(async p => p.Comments = await this._commentService
+            //    .GetCommentsByPostIdAsync(p.PostId));
+
+            return posts;
+        }
         #region ExtractToCommentService
 
         //private static ICollection<CommentTagFriendsViewModel> GetCommentViewModelsByPostId(int postId)

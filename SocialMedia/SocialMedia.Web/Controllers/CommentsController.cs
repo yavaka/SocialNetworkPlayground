@@ -134,14 +134,14 @@
                     viewModel.TagFriends = TempData.Get<TagFriendsServiceModel>("tagFriendsServiceModel");
                 }
 
-                var currentUserId = this._userManager.GetUserId(User);
+                var currentUserId = await this._userManager.GetUserAsync(User);
 
                 await this._commentService
                     .AddComment(new CommentServiceModel
                     {
                         Content = viewModel.Content,
                         DatePosted = DateTime.Now,
-                        AuthorId = currentUserId,
+                        Author = new UserServiceModel(currentUserId),
                         PostId = viewModel.PostId,
                         TaggedFriends = viewModel.TagFriends.TaggedFriends
                     });
@@ -152,7 +152,6 @@
                     TempData.Clear();
                     return RedirectToAction(
                         "Details", "Groups", new { groupId = group.GroupId });
-
                 }
 
                 if (TempData.ContainsKey("userId"))
@@ -161,6 +160,7 @@
                     TempData.Clear();
                     return RedirectToAction("Index", "Profile", new { userId = userId });
                 }
+                TempData.Clear();
                 return RedirectToAction("Index", "Profile");
             }
             return View();
