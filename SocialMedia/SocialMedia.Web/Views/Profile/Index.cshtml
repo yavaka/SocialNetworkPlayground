@@ -157,7 +157,7 @@ Model.Message == "1")
                             </div>
                             @if (Model.CurrentUserId == post.Author.Id)
                             {
-                                <!-- Dropdown settings if the post author is current user -->
+                                <!-- Dropdown settings -->
                                 <div class="col-md-2 dropdown">
                                     <button class="btn btn-outline-primary" data-toggle="dropdown" role="menu" aria-expanded="false" style="cursor:pointer">
                                         <img width="25" height="25" src="https://img.icons8.com/ultraviolet/40/000000/settings.png" />
@@ -227,7 +227,23 @@ Model.Message == "1")
                                                 <div class="col-md-2">
                                                     @if (Model.CurrentUserId == comment.Author.Id)
                                                     {
-                                                        <button class="btn btn-outline-primary"><img width="15" height="15" src="https://img.icons8.com/ultraviolet/40/000000/settings.png" /></button>
+                                                        <button class="btn btn-outline-primary" data-toggle="dropdown" role="menu" aria-expanded="false" style="cursor:pointer">
+                                                            <img width="25" height="25" src="https://img.icons8.com/ultraviolet/40/000000/settings.png" />
+                                                        </button>
+                                                        <ul class="dropdown-menu">
+                                                            <li>
+                                                                @Html.ActionLink(
+                                                 "Edit", "Edit", "Comments",
+                                                 new { id = comment.CommentId },
+                                                 new { @class = "btn" })
+                                                            </li>
+                                                            <li>
+                                                                @Html.ActionLink(
+                                                 "Delete", "Delete", "Comments",
+                                                 new { id = comment.CommentId },
+                                                 new { @class = "btn" })
+                                                            </li>
+                                                        </ul>
                                                     }
                                                 </div>
                                             </div>

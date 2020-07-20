@@ -21,7 +21,6 @@
                     <label>@Model.CurrentUser.UserName is with </label>
                     foreach (var user in Model.TagFriends.TaggedFriends)
                     {
-
                         <a href="#" class="badge badge-primary">@user.UserName </a>
                     }
                 }
@@ -59,7 +58,7 @@
                                                user.UserName, 
                                                "TagFriend", 
                                                "TagFriends", 
-                                               new { taggedId = user.Id, postId = Model.PostId})
+                                               new { id = Model.PostId, taggedId = user.Id })
                                             </li>
                                         }
                                     }
@@ -89,7 +88,7 @@
                                                user.UserName, 
                                                "RemoveTaggedFriend", 
                                                "TagFriends", 
-                                               new { taggedId = user.Id, postId = Model.PostId })
+                                               new { taggedId = user.Id, id = Model.PostId })
                                             </li>
                                         }
                                     </ul>

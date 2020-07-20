@@ -173,13 +173,7 @@
         {
             if (ModelState.IsValid)
             {
-                //Get locally tagged friends
-                if (TempData.ContainsKey("tagFriendsServiceModel"))
-                {
-                    viewModel.TagFriends = TempData.Get<TagFriendsServiceModel>("tagFriendsServiceModel");
-                }
-
-                //Get group where the post is going to be created
+                //Get group where the post is for
                 if (TempData.ContainsKey("group"))
                 {
                     viewModel.Group = TempData.Get<Group>("group");

@@ -77,46 +77,82 @@
                 new { postId = serviceModel.PostId });
         }
 
-        public async Task<IActionResult> TagFriendAsync(string taggedId, int? postId)
+        public async Task<IActionResult> TagFriendAsync(int? id, string taggedId)
         {
             if (taggedId == null ||
-                postId == null)
+                id == null)
             {
                 return NotFound();
             }
 
             var taggerId = this._userManager.GetUserId(User);
+            
+            if (TempData.ContainsKey("Posts"))
+            {
+                await this._taggedUserService.TagFriendPost(taggerId, taggedId, (int)id);
 
-            await this._taggedUserService.TagFriend(taggerId, taggedId, (int)postId);
+                var invokedFrom = TempData
+                   .Get<string>("Posts")
+                   .Trim('"');
 
-            var invokedFrom = TempData
-               .Get<string>("Posts")
-               .Trim('"');
+                return RedirectToAction(
+                    invokedFrom,
+                    "Posts",
+                    new { id = id });
+            }
+            if (TempData.ContainsKey("Comments"))
+            {
+                await this._taggedUserService.TagFriendComment(taggerId, taggedId, (int)id);
+                
+                var invokedFrom = TempData
+                       .Get<string>("Comments")
+                       .Trim('"');
 
-            return RedirectToAction(
-                invokedFrom,
-                "Posts",
-                new { id = postId });
+                return RedirectToAction(
+                    invokedFrom,
+                    "Comments",
+                    new { id = id });
+            }
+            return NotFound();
         }
 
-        public async Task<IActionResult> RemoveTaggedFriendAsync(string taggedId, int? postId)
+        public async Task<IActionResult> RemoveTaggedFriendAsync(string taggedId, int? id)
         {
             if (taggedId == null ||
-                postId == null)
+                id == null)
             {
                 return NotFound();
             }
 
-            await this._taggedUserService.RemoveTaggedFriend(taggedId, (int)postId);
+            if (TempData.ContainsKey("Posts"))
+            {
+                await this._taggedUserService.RemoveTaggedFriendPost(taggedId, (int)id);
 
-            var invokedFrom = TempData
-               .Get<string>("Posts")
-               .Trim('"');
+                 var invokedFrom = TempData
+                   .Get<string>("Posts")
+                   .Trim('"');
 
-            return RedirectToAction(
-                invokedFrom,
-                "Posts",
-                new { id = postId });
+                return RedirectToAction(
+                    invokedFrom,
+                    "Posts",
+                    new { id = id });
+            }
+
+            if (TempData.ContainsKey("Comments"))
+            {
+                await this._taggedUserService.RemoveTaggedFriendComment(taggedId, (int)id);
+
+                var invokedFrom = TempData
+                  .Get<string>("Comments")
+                  .Trim('"');
+
+                return RedirectToAction(
+                    invokedFrom,
+                    "Comments",
+                    new { id = id });
+            }
+
+            return NotFound();
         }
     }
 }

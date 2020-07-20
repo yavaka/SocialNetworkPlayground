@@ -65,22 +65,19 @@
         }
 
         public async Task<PostServiceModel> GetPost(int id)
-        {
-            var post = await this._data.Posts.Select(p =>
-                  new PostServiceModel
-                  {
-                      PostId = p.PostId,
-                      Content = p.Content,
-                      DatePosted = p.DatePosted,
-                      Author = new UserServiceModel(p.Author),
-                      Group = p.Group,
-                      TaggedFriends = p.TaggedUsers
-                             .Select(t => new UserServiceModel(t.Tagged))
-                             .ToList()
-                  }).FirstOrDefaultAsync(i => i.PostId == id);
-
-            return post;
-        }
+        => await this._data.Posts
+            .Select(p => new PostServiceModel
+            {
+                PostId = p.PostId,
+                Content = p.Content,
+                DatePosted = p.DatePosted,
+                Author = new UserServiceModel(p.Author),
+                Group = p.Group,
+                TaggedFriends = p.TaggedUsers
+                    .Select(t => new UserServiceModel(t.Tagged))
+                    .ToList()
+            })
+            .FirstOrDefaultAsync(i => i.PostId == id);
 
         public async Task<ICollection<PostServiceModel>> GetPostsByUserIdAsync(string userId)
         {
@@ -110,36 +107,5 @@
 
             return posts;
         }
-        #region ExtractToCommentService
-
-        //private static ICollection<CommentTagFriendsViewModel> GetCommentViewModelsByPostId(int postId)
-        //{
-        //    var commentViewModels = new List<CommentTagFriendsViewModel>();
-
-        //    var comments = _data.Comments
-        //        .Include(a => a.Author)
-        //        .Include(t => t.TaggedUsers)
-        //        .Where(p => p.CommentedPostId == postId)
-        //        .ToList();
-
-        //    foreach (var comment in comments)
-        //    {
-        //        commentViewModels.Add(NewCommentViewModel(comment));
-        //    }
-
-        //    return commentViewModels;
-        //}
-
-        //private static CommentTagFriendsViewModel NewCommentViewModel(Comment comment)
-        //  => new CommentTagFriendsViewModel
-        //        {
-        //            Comment = comment,
-        //            Tagged = comment
-        //                    .TaggedUsers
-        //                    .Select(u => u.Tagged)
-        //                    .ToList()
-        //        };
-
-        #endregion
     }
 }

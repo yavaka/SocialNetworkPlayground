@@ -45,9 +45,9 @@
               })
               .ToListAsync();
 
-        public async Task<EntityState> TagFriend(string taggerId, string taggedId, int postId)
+        public async Task<EntityState> TagFriendPost(string taggerId, string taggedId, int postId)
         {
-            await this._data.AddAsync(new TagFriends 
+            await this._data.AddAsync(new TagFriends
             {
                 TaggerId = taggerId,
                 TaggedId = taggedId,
@@ -59,13 +59,50 @@
             return EntityState.Added;
         }
 
-        public async Task<EntityState> RemoveTaggedFriend(string taggedId, int postId)
+        public async Task<EntityState> TagFriendComment(string taggerId, string taggedId, int commentId)
+        {
+            await this._data.AddAsync(new TagFriends 
+            {
+                TaggerId = taggerId,
+                TaggedId = taggedId,
+                CommentId = commentId
+            });
+
+            await this._data.SaveChangesAsync();
+
+            return EntityState.Added;
+        }
+
+        public async Task<EntityState> RemoveTaggedFriendPost(string taggedId, int postId)
         {
             var entity = await this._data.TagFriends
                 .FirstOrDefaultAsync(u => u.TaggedId == taggedId &&
                                          u.PostId == postId);
 
             this._data.TagFriends.Remove(entity);
+            await this._data.SaveChangesAsync();
+
+            return EntityState.Deleted;
+        }
+
+        public async Task<EntityState> RemoveTaggedFriendComment(string taggedId, int commentId) 
+        {
+            var entity = await this._data.TagFriends
+                .FirstOrDefaultAsync(u => u.TaggedId == taggedId &&
+                                        u.CommentId == commentId);
+            this._data.TagFriends.Remove(entity);
+            await this._data.SaveChangesAsync();
+
+            return EntityState.Deleted;
+        }
+
+        public async Task<EntityState> RemoveTaggedFriendsCommentId(int commentId)
+        {
+            var entities = await this._data.TagFriends
+                 .Where(c => c.CommentId == commentId)
+                 .ToListAsync();
+
+            this._data.TagFriends.RemoveRange(entities);
             await this._data.SaveChangesAsync();
 
             return EntityState.Deleted;

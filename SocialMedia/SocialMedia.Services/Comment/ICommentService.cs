@@ -8,6 +8,12 @@ namespace SocialMedia.Services.Comment
     public interface ICommentService
     {
         Task<EntityState> AddComment(CommentServiceModel commentServiceModel);
+        
+        Task<EntityState> EditComment(CommentServiceModel serviceModel);
+       
+        Task<EntityState> RemoveComment(int id);
+
+        Task<CommentServiceModel> GetComment(int id);
 
         Task<ICollection<CommentServiceModel>> GetCommentsByPostIdAsync(int postId);
     }
