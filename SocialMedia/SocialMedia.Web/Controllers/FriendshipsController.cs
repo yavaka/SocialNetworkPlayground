@@ -4,7 +4,6 @@
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using SocialMedia.Data.Models;
-    using SocialMedia.Models.ViewModels;
     using SocialMedia.Services.Friendship;
     using SocialMedia.Services.Models;
 

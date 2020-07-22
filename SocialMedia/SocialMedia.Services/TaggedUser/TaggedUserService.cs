@@ -96,7 +96,19 @@
             return EntityState.Deleted;
         }
 
-        public async Task<EntityState> RemoveTaggedFriendsCommentId(int commentId)
+        public async Task<EntityState> DeleteTaggedFriendsPostId(int postId)
+        {
+            var entities = await this._data.TagFriends
+                 .Where(p => p.PostId == postId)
+                 .ToListAsync();
+
+            this._data.TagFriends.RemoveRange(entities);
+            await this._data.SaveChangesAsync();
+
+            return EntityState.Deleted;
+        }
+
+        public async Task<EntityState> DeleteTaggedFriendsCommentId(int commentId)
         {
             var entities = await this._data.TagFriends
                  .Where(c => c.CommentId == commentId)
@@ -120,6 +132,16 @@
             }
 
             return friends;
+        }
+
+        public async Task DeleteTaggedFriendsInComments(ICollection<int> commentsIds)
+        {
+            var entities = this._data.TagFriends
+                .Where(i => commentsIds
+                        .Contains((int)i.CommentId));
+
+            this._data.TagFriends.RemoveRange(entities);
+            await this._data.SaveChangesAsync();
         }
     }
 }

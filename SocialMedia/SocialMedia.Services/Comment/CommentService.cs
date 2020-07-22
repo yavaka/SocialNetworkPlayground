@@ -56,7 +56,7 @@
             return EntityState.Modified;
         }
 
-        public async Task<EntityState> RemoveComment(int id)
+        public async Task<EntityState> DeleteComment(int id)
         {
             var comment = await this._data.Comments
                 .FirstOrDefaultAsync(i => i.Id == id);

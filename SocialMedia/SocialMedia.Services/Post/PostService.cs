@@ -64,6 +64,17 @@
             return EntityState.Modified;
         }
 
+        public async Task<EntityState> DeletePost(int id)
+        {
+            var post = await this._data.Posts
+                .FirstOrDefaultAsync(i => i.PostId == id);
+
+            this._data.Remove(post);
+            await this._data.SaveChangesAsync();
+
+            return EntityState.Deleted;
+        }
+
         public async Task<PostServiceModel> GetPost(int id)
         => await this._data.Posts
             .Select(p => new PostServiceModel

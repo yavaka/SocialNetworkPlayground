@@ -7,13 +7,14 @@
 
     public interface IPostService
     {
-        Task<ICollection<PostServiceModel>> GetPostsByUserIdAsync(string userId);
-
         Task<EntityState> AddPost(PostServiceModel serviceModel);
 
         Task<EntityState> EditPost(PostServiceModel serviceModel);
+        
+        Task<EntityState> DeletePost(int id);
 
         Task<PostServiceModel> GetPost(int id);
 
+        Task<ICollection<PostServiceModel>> GetPostsByUserIdAsync(string userId);
     }
 }

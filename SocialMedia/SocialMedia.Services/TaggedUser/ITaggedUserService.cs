@@ -22,11 +22,14 @@
 
         Task<EntityState> RemoveTaggedFriendComment(string taggedId, int commentId);
         
-        Task<EntityState> RemoveTaggedFriendsCommentId(int id);
+        Task<EntityState> DeleteTaggedFriendsPostId(int postId);
+        
+        Task<EntityState> DeleteTaggedFriendsCommentId(int commentId);
 
         ICollection<UserServiceModel> GetUntaggedFriends(
             ICollection<UserServiceModel> taggedFriends,
             ICollection<UserServiceModel> friends);
-        
+
+        Task DeleteTaggedFriendsInComments(ICollection<int> commentsIds);
     }
 }

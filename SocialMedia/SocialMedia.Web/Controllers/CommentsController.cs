@@ -2,14 +2,10 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
-    using SocialMedia.Data;
     using SocialMedia.Data.Models;
-    using SocialMedia.Models.ViewModels;
     using SocialMedia.Web.Models;
     using SocialMedia.Services.Models;
     using SocialMedia.Web.Infrastructure;
@@ -232,8 +228,8 @@
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await this._taggedUserService.RemoveTaggedFriendsCommentId(id);
-            await this._commentService.RemoveComment(id);
+            await this._taggedUserService.DeleteTaggedFriendsCommentId(id);
+            await this._commentService.DeleteComment(id);
 
             var group = new Group();
             var userId = string.Empty;
