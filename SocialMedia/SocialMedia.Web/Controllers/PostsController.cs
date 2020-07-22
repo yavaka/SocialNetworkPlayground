@@ -2,7 +2,6 @@
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using SocialMedia.Data.Models;
     using SocialMedia.Services.Friendship;
@@ -14,37 +13,39 @@
     using SocialMedia.Services.TaggedUser;
     using SocialMedia.Services.Comment;
     using System.Linq;
+    using SocialMedia.Services.User;
 
     public class PostsController : Controller
     {
-        private readonly UserManager<User> _userManager;
         private readonly IFriendshipService _friendshipService;
         private readonly IPostService _postService;
         private readonly ITaggedUserService _taggedUserService;
         private readonly ICommentService _commentService;
+        private readonly IUserService _userService;
 
         public PostsController(
-            UserManager<User> userManager,
             IFriendshipService friendshipService,
             IPostService postService,
             ITaggedUserService taggedUserService,
-            ICommentService commentService)
+            ICommentService commentService,
+            IUserService userService)
         {
-            this._userManager = userManager;
             this._friendshipService = friendshipService;
             this._postService = postService;
             this._taggedUserService = taggedUserService;
             this._commentService = commentService;
+            this._userService = userService;
         }
 
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            var currentUser = await this._userManager.GetUserAsync(User);
+            var currentUser = await this._userService
+                .GetCurrentUserAsync(User);
 
             var viewModel = new PostViewModel
             {
-                CurrentUser = new UserServiceModel(currentUser),
+                Author = currentUser,
             };
 
             if (TempData.ContainsKey("group"))
@@ -98,14 +99,15 @@
                     viewModel.Group = TempData.Get<Group>("group");
                 }
 
-                var currentUser = await this._userManager.GetUserAsync(User);
+                var currentUser = await this._userService
+                    .GetCurrentUserAsync(User);
 
                 await this._postService
                     .AddPost(new PostServiceModel
                     {
                         Content = viewModel.Content,
                         DatePosted = DateTime.Now,
-                        Author = new UserServiceModel(currentUser),
+                        Author = currentUser,
                         Group = viewModel.Group,
                         TaggedFriends = viewModel.TagFriends.TaggedFriends
                     });
@@ -133,12 +135,12 @@
 
             var viewModel = new PostViewModel(post);
 
-            viewModel.CurrentUser = new UserServiceModel(
-                await this._userManager.GetUserAsync(User));
+            viewModel.Author = await this._userService
+                .GetCurrentUserAsync(User);
 
 
             var friends = await this._friendshipService
-                .GetFriendsAsync(viewModel.CurrentUser.Id);
+                .GetFriendsAsync(viewModel.Author.Id);
 
             if (post.TaggedFriends.Count > 0)
             {
@@ -154,7 +156,7 @@
                 viewModel.TagFriends = new TagFriendsServiceModel
                 {
                     UntaggedFriends = await this._friendshipService
-                        .GetFriendsAsync(viewModel.CurrentUser.Id),
+                        .GetFriendsAsync(viewModel.Author.Id),
                     TaggedFriends = new List<UserServiceModel>(),
                 };
             }
@@ -250,5 +252,4 @@
             return RedirectToAction("Index", "Profile");
         }
     }
-
 }

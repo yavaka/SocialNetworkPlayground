@@ -1,6 +1,5 @@
 namespace SocialMedia.Web
 {
-    using System.IO;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Identity;
@@ -17,6 +16,7 @@ namespace SocialMedia.Web
     using SocialMedia.Services.Friendship;
     using SocialMedia.Services.Profile;
     using SocialMedia.Services.Comment;
+    using SocialMedia.Services.User;
 
     public class Startup
     {
@@ -44,6 +44,8 @@ namespace SocialMedia.Web
             services.AddTransient<IFriendshipService, FriendshipService>();
             services.AddTransient<IProfileService, ProfileService>();
             services.AddTransient<ICommentService, CommentService>();
+            services.AddTransient<IUserService, UserService>();
+
             // Cookies for Login
             services
                 .ConfigureApplicationCookie(options => options

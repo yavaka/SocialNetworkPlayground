@@ -38,24 +38,24 @@
     }
     else
     {
-        var posts = Model.Posts.OrderByDescending(d => d.Post.DatePosted);
+        var posts = Model.Posts.OrderByDescending(d => d.DatePosted);
 
         @foreach (var postViewModel in posts)
         {
             <div class="jumbotron">
-                <h3>@postViewModel.Post.Author.UserName</h3>
+                <h3>@postViewModel.Author.UserName</h3>
                 @* Tagged users *@
-                @if (postViewModel.Tagged.Count > 0)
+                @if (postViewModel.TaggedFriends.Count > 0)
                 {
-                    <h4>@String.Join(',', postViewModel.Tagged)</h4>
+                    <h4>@String.Join(',', postViewModel.TaggedFriends)</h4>
                 }
                 <hr />
-                <p style="font-size:24px">@postViewModel.Post.Content</p>
-                <span>@postViewModel.Post.DatePosted.Date</span>
+                <p style="font-size:24px">@postViewModel.Content</p>
+                <span>@postViewModel.DatePosted.Date</span>
                 <hr />
 
-                <button class="btn btn-outline-info">@Html.ActionLink("Comments", "Index", "Comments", new { id = postViewModel.Post.PostId })</button>
-                <button class="btn btn-outline-primary">@Html.ActionLink("Add comment", "Create", "Comments", new { id = postViewModel.Post.PostId })</button>
+                <button class="btn btn-outline-info">@Html.ActionLink("Comments", "Index", "Comments", new { id = postViewModel.PostId })</button>
+                <button class="btn btn-outline-primary">@Html.ActionLink("Add comment", "Create", "Comments", new { id = postViewModel.PostId })</button>
             </div>
         }
     }

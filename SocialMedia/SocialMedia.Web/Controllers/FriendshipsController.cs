@@ -1,28 +1,28 @@
 ﻿namespace SocialMedia.Web.Controllers
 {
     using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
-    using SocialMedia.Data.Models;
     using SocialMedia.Services.Friendship;
     using SocialMedia.Services.Models;
+    using SocialMedia.Services.User;
 
     public class FriendshipsController : Controller
     {
-        private readonly UserManager<User> _userManager;
         private readonly IFriendshipService _friendshipService;
+        private readonly IUserService _userService;
 
         public FriendshipsController(
-            UserManager<User> userManager,
-            IFriendshipService friendshipService)
+            IFriendshipService friendshipService,
+            IUserService userService)
         {
-            this._userManager = userManager;
             this._friendshipService = friendshipService;
+            this._userService = userService;
         }
 
         public async Task<IActionResult> Friends()
         {
-            var currentUserId = this._userManager
+            TempData.Clear();
+            var currentUserId = this._userService
                 .GetUserId(User);
 
             var friends = await this._friendshipService
@@ -33,7 +33,8 @@
 
         public async Task<IActionResult> NonFriends()
         {
-            var currentUserId = this._userManager
+            TempData.Clear();
+            var currentUserId = this._userService
                 .GetUserId(User);
 
             var nonFriends = await this._friendshipService
@@ -50,7 +51,8 @@
                 return NotFound();
             }
 
-            var currentUserId = this._userManager.GetUserId(User);
+            var currentUserId = this._userService
+                .GetUserId(User);
 
             if (currentUserId == userId)
             {
@@ -80,7 +82,8 @@
         {
             var model = new FriendshipServiceModel();
 
-            var currentUserId = this._userManager.GetUserId(User);
+            var currentUserId = this._userService
+                .GetUserId(User);
 
             model.Requests = await this._friendshipService
                 .GetFriendRequestsAsync(currentUserId);
@@ -98,7 +101,7 @@
                 return NotFound();
             }
 
-            var currentUserId = this._userManager.GetUserId(User);
+            var currentUserId = this._userService.GetUserId(User);
 
             await this._friendshipService.SendRequestAsync(currentUserId, addresseeId);
 
@@ -107,7 +110,7 @@
 
         public async Task<IActionResult> AcceptAsync(string requesterId)
         {
-            var currentUserId = this._userManager.GetUserId(User);
+            var currentUserId = this._userService.GetUserId(User);
 
             await this._friendshipService.AcceptRequestAsync(currentUserId, requesterId);
 
@@ -116,7 +119,7 @@
 
         public async Task<IActionResult> RejectAsync(string requesterId)
         {
-            var currentUserId = this._userManager.GetUserId(User);
+            var currentUserId = this._userService.GetUserId(User);
 
             await this._friendshipService.RejectRequestAsync(currentUserId, requesterId);
 
@@ -125,7 +128,7 @@
 
         public async Task<IActionResult> CancelInvitationAsync(string addresseeId)
         {
-            var currentUserId = this._userManager.GetUserId(User);
+            var currentUserId = this._userService.GetUserId(User);
 
             await this._friendshipService.CancelInvitationAsync(currentUserId, addresseeId);
 
@@ -134,7 +137,7 @@
 
         public async Task<IActionResult> UnfriendAsync(string friendId) 
         {
-            var currentUserId = this._userManager.GetUserId(User);
+            var currentUserId = this._userService.GetUserId(User);
 
             await this._friendshipService.UnfriendAsync(currentUserId, friendId);
 

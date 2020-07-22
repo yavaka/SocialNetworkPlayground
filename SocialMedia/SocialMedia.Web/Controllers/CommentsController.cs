@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using SocialMedia.Data.Models;
     using SocialMedia.Web.Models;
@@ -12,40 +11,37 @@
     using SocialMedia.Services.Friendship;
     using SocialMedia.Services.Comment;
     using SocialMedia.Services.TaggedUser;
+    using SocialMedia.Services.User;
 
     public class CommentsController : Controller
     {
-        private readonly UserManager<User> _userManager;
         private readonly IFriendshipService _friendshipService;
         private readonly ICommentService _commentService;
         private readonly ITaggedUserService _taggedUserService;
+        private readonly IUserService _userService;
 
         public CommentsController(
-            UserManager<User> userManager,
             IFriendshipService friendshipService,
             ICommentService commentService,
-            ITaggedUserService taggedUserService)
+            ITaggedUserService taggedUserService,
+            IUserService userService)
         {
-            this._userManager = userManager;
             this._friendshipService = friendshipService;
             this._commentService = commentService;
             this._taggedUserService = taggedUserService;
+            this._userService = userService;
         }
 
         [HttpGet]
-        public async Task<IActionResult> Create(int? postId)
+        public async Task<IActionResult> Create(int postId)
         {
-            if (postId == null)
-            {
-                return NotFound();
-            }
-
-            var currentUser = await this._userManager.GetUserAsync(User);
+            var currentUser = await this._userService
+                .GetCurrentUserAsync(User);
 
             var viewModel = new CommentViewModel
             {
-                Author = new UserServiceModel(currentUser),
-                PostId = (int)postId
+                Author = currentUser,
+                PostId = postId
             };
 
             //Locally tagged friends
@@ -88,14 +84,15 @@
                     viewModel.TagFriends = TempData.Get<TagFriendsServiceModel>("tagFriendsServiceModel");
                 }
 
-                var currentUserId = await this._userManager.GetUserAsync(User);
+                var currentUser = await this._userService
+                    .GetCurrentUserAsync(User);
 
                 await this._commentService
                     .AddComment(new CommentServiceModel
                     {
                         Content = viewModel.Content,
                         DatePosted = DateTime.Now,
-                        Author = new UserServiceModel(currentUserId),
+                        Author = currentUser,
                         PostId = viewModel.PostId,
                         TaggedFriends = viewModel.TagFriends.TaggedFriends
                     });
@@ -120,14 +117,10 @@
             return View();
         }
 
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var comment = await this._commentService.GetComment((int)id);
+            var comment = await this._commentService
+                .GetComment(id);
 
             if (comment == null)
             {
@@ -206,13 +199,8 @@
         }
 
         [HttpGet]
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var comment = await this._commentService
                 .GetComment((int)id);
 

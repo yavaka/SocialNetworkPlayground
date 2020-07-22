@@ -1,29 +1,28 @@
 ﻿namespace SocialMedia.Web.Controllers
 {
     using System.Linq;
-    using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using Newtonsoft.Json;
-    using SocialMedia.Data.Models;
     using SocialMedia.Services.Models;
     using SocialMedia.Services.TaggedUser;
     using SocialMedia.Web.Infrastructure;
     using System.Threading.Tasks;
+    using SocialMedia.Services.User;
 
     public class TagFriendsController : Controller
     {
-        private readonly UserManager<User> _userManager;
         private readonly ITaggedUserService _taggedUserService;
+        private readonly IUserService _userService;
 
         public TagFriendsController(
-            UserManager<User> userManager,
-            ITaggedUserService taggedUserService)
+            ITaggedUserService taggedUserService,
+            IUserService userService)
         {
-            this._userManager = userManager;
             this._taggedUserService = taggedUserService;
+            this._userService = userService;
         }
 
-        public IActionResult AddTaggedFriendLocal(string taggedId)
+        public async Task<IActionResult> AddTaggedFriendLocalAsync(string taggedId)
         {
             var serviceModel = TempData.Get<TagFriendsServiceModel>("tagFriendsServiceModel");
 
@@ -55,9 +54,8 @@
             }
 
             //Adds tagged user in tagged collection of the view model
-            var taggedFriend = new UserServiceModel(
-                this._userManager.Users
-                        .FirstOrDefault(i => i.Id == taggedId));
+            var taggedFriend = await this._userService
+                .GetUserByIdAsync(taggedId);
 
             serviceModel.TaggedFriends.Add(taggedFriend);
 
@@ -85,7 +83,8 @@
                 return NotFound();
             }
 
-            var taggerId = this._userManager.GetUserId(User);
+            var taggerId = this._userService
+                .GetUserId(User);
             
             if (TempData.ContainsKey("Posts"))
             {

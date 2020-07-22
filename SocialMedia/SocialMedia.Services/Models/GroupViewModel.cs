@@ -1,6 +1,7 @@
 ﻿namespace SocialMedia.Models.ViewModels
 {
     using SocialMedia.Data.Models;
+    using SocialMedia.Services.Models;
     using System.Collections.Generic;
 
     public class GroupViewModel
@@ -10,7 +11,7 @@
             this.Groups = new List<Group>();
             this.MemberGroups = new List<Group>();
             this.NonMemberGroups = new List<Group>();
-            this.Posts = new List<PostTagFriendsViewModel>();
+            this.Posts = new List<PostServiceModel>();
         }
 
         public Group Group { get; set; }
@@ -19,7 +20,7 @@
         /// <summary>
         /// Group posts with tagged users 
         /// </summary>
-        public ICollection<PostTagFriendsViewModel> Posts { get; set; }
+        public ICollection<PostServiceModel> Posts { get; set; }
 
         public ICollection<Group> Groups { get; set; }
 

@@ -12,10 +12,7 @@
     {
         private readonly SocialMediaDbContext _data;
 
-        public FriendshipService(SocialMediaDbContext data)
-        {
-            this._data = data;
-        }
+        public FriendshipService(SocialMediaDbContext data)=>this._data = data;
 
         public async Task<ICollection<UserServiceModel>> GetFriendsAsync(string userId)
         {

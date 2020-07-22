@@ -7,24 +7,26 @@
     using SocialMedia.Services.Models;
     using SocialMedia.Services.Profile;
     using SocialMedia.Web.Infrastructure;
+    using SocialMedia.Services.User;
 
     public class ProfileController : Controller
     {
-        private readonly UserManager<User> _userManager;
         private readonly IProfileService _profileService;
+        private readonly IUserService _userService;
 
         public ProfileController(
-            UserManager<User> userManager,
-            IProfileService profileService)
+            IProfileService profileService,
+            IUserService userService)
         {
-            this._userManager = userManager;
             this._profileService = profileService;
+            this._userService = userService;
         }
 
         [HttpGet]
         public async Task<IActionResult> IndexAsync(string userId)
         {
-            var currentUserId = this._userManager.GetUserId(User);
+            var currentUserId = this._userService
+                .GetUserId(User);
 
             ProfileServiceModel profile;
 

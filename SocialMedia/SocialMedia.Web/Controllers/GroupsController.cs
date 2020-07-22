@@ -130,13 +130,13 @@ namespace SocialMedia.Web.Controllers
                 {
                     //Gets the current post with TagFriends and Author db records
                     var postTFEntities = GetPostById(post.PostId);
-                    ViewModel.Posts.Add(new PostTagFriendsViewModel()
-                    {
-                        Post = postTFEntities,
-                        Tagged = (postTFEntities.TaggedUsers.Count > 0)
-                                    ? await GetTaggedUsersAsync(postTFEntities.TaggedUsers)
-                                    : new List<User>(),
-                    });
+                    //ViewModel.Posts.Add(new PostTagFriendsViewModel()
+                    //{
+                    //    Post = postTFEntities,
+                    //    Tagged = (postTFEntities.TaggedUsers.Count > 0)
+                    //                ? await GetTaggedUsersAsync(postTFEntities.TaggedUsers)
+                    //                : new List<User>(),
+                    //});
                 }
             }
 

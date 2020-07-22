@@ -16,7 +16,7 @@
                 @*--Tagged users--*@
                 @if (Model.TagFriends.TaggedFriends.Count > 0)
                 {
-                    <label>@Model.CurrentUser.UserName is with </label>
+                    <label>@Model.Author.UserName is with </label>
                     foreach (var user in Model.TagFriends.TaggedFriends)
                     {
 
@@ -25,7 +25,7 @@
                 }
                 else
                 {
-                    <label>@Model.CurrentUser.UserName</label>
+                    <label>@Model.Author.UserName</label>
                 }
                 <input asp-for="@Model.Content" class="form-control" />
                 <span asp-validation-for="@Model.Content" class="text-danger"></span>
@@ -45,7 +45,7 @@
                                     @if (Model.TagFriends.UntaggedFriends.Count == 0)
                                     {
                                         <li>
-                                            @Model.CurrentUser.UserName, you do not have any more friends.
+                                            @Model.Author.UserName, you do not have any more friends.
                                         </li>
                                     }
                                     else
