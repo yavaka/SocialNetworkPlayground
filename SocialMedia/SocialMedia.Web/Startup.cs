@@ -17,6 +17,7 @@ namespace SocialMedia.Web
     using SocialMedia.Services.Profile;
     using SocialMedia.Services.Comment;
     using SocialMedia.Services.User;
+    using SocialMedia.Services.Group;
 
     public class Startup
     {
@@ -45,6 +46,7 @@ namespace SocialMedia.Web
             services.AddTransient<IProfileService, ProfileService>();
             services.AddTransient<ICommentService, CommentService>();
             services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IGroupService, GroupService>();
 
             // Cookies for Login
             services

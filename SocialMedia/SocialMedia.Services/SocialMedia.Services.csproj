@@ -18,8 +18,4 @@
     <ProjectReference Include="..\SocialMedia.Data\SocialMedia.Data.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Group\" />
-  </ItemGroup>
-
 </Project>

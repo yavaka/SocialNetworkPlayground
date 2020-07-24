@@ -136,12 +136,16 @@
 
         public async Task DeleteTaggedFriendsInComments(ICollection<int> commentsIds)
         {
-            var entities = this._data.TagFriends
+            var entities = await this._data.TagFriends
                 .Where(i => commentsIds
-                        .Contains((int)i.CommentId));
+                        .Contains((int)i.CommentId))
+                .ToListAsync();
 
-            this._data.TagFriends.RemoveRange(entities);
-            await this._data.SaveChangesAsync();
+            if (entities.Count > 0)
+            {
+                this._data.TagFriends.RemoveRange(entities);
+                await this._data.SaveChangesAsync();
+            }
         }
     }
 }

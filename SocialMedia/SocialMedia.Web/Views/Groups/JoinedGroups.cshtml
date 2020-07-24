@@ -1,4 +1,4 @@
-﻿@model SocialMedia.Models.ViewModels.GroupViewModel
+﻿@model ICollection<SocialMedia.Services.Models.GroupServiceModel>
 
 @{
     ViewData["Title"] = "MyGroups";
@@ -13,21 +13,21 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Group.Title)
+                Title
             </th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var group in Model.MemberGroups)
+        @foreach (var group in Model)
         {
             <tr>
                 <td>
                     @Html.DisplayFor(modelItem => group.Title)
                 </td>
                 <td>
-                    @Html.ActionLink("Details", "Details", "Groups", new { id = group.GroupId})
+                    @Html.ActionLink("Details", "Details", "Groups", new { id = group.GroupId })
                 </td>
-                @if (group.Message == "admin")
+                @if (group.AdminId == TempData["currentUserId"] as string)
                 {
                     <td>
                         <a asp-action="Edit" asp-route-id="@group.GroupId">Edit</a> |

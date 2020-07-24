@@ -16,5 +16,7 @@
         Task<PostServiceModel> GetPost(int id);
 
         Task<ICollection<PostServiceModel>> GetPostsByUserIdAsync(string userId);
+
+        Task<ICollection<PostServiceModel>> GetPostsByGroupIdAsync(int groupId);
     }
 }

@@ -69,7 +69,7 @@
             var post = await this._data.Posts
                 .FirstOrDefaultAsync(i => i.PostId == id);
 
-            this._data.Remove(post);
+            this._data.Posts.Remove(post);
             await this._data.SaveChangesAsync();
 
             return EntityState.Deleted;
@@ -113,8 +113,30 @@
                     .GetCommentsByPostIdAsync(post.PostId);
             }
 
-            //posts.ForEach(async p => p.Comments = await this._commentService
-            //    .GetCommentsByPostIdAsync(p.PostId));
+            return posts;
+        }
+
+        public async Task<ICollection<PostServiceModel>> GetPostsByGroupIdAsync(int groupId)
+        {
+            var posts = this._data.Posts
+               .Where(i => i.GroupId == groupId)
+               .Select(p => new PostServiceModel
+               {
+                   PostId = p.PostId,
+                   Content = p.Content,
+                   DatePosted = p.DatePosted,
+                   Author = new UserServiceModel(p.Author),
+                   TaggedFriends = p.TaggedUsers
+                       .Select(t => new UserServiceModel(t.Tagged))
+                       .ToList()
+               })
+               .ToList();
+
+            foreach (var post in posts)
+            {
+                post.Comments = await this._commentService
+                    .GetCommentsByPostIdAsync(post.PostId);
+            }
 
             return posts;
         }

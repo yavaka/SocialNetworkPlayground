@@ -1,9 +1,7 @@
 ﻿namespace SocialMedia.Web.Controllers
 {
-    using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using System.Threading.Tasks;
-    using SocialMedia.Data.Models;
     using SocialMedia.Services.Models;
     using SocialMedia.Services.Profile;
     using SocialMedia.Web.Infrastructure;

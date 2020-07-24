@@ -4,7 +4,7 @@
     using Microsoft.AspNetCore.Http.Extensions;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
-    using SocialMedia.Models;
+    using SocialMedia.Web.Models;
 
     public class HomeController : Controller
     {

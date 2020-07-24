@@ -37,6 +37,7 @@
             this._userService = userService;
         }
 
+        // groupId is null whenever the method is invoked from user profile
         [HttpGet]
         public async Task<IActionResult> Create()
         {
