@@ -70,7 +70,11 @@ else
     <!-- New Post Btn -->
     @Html.ActionLink(
             "Add Post", "Create", "Posts",
-            new { groupId = Model.GroupId },
+            new 
+            {
+                groupId = Model.GroupId,
+                path = $"Groups/Details/{Model.GroupId}"
+            },
             new
             {
                 @class = "col-md-12 btn btn-outline-primary",
@@ -103,7 +107,8 @@ else
                                        "Edit", "Edit", "Posts",
                                        new
                                        {
-                                           id = post.PostId
+                                           id = post.PostId,
+                                           path = $"Groups/Details/{Model.GroupId}"
                                        },
                                        new { @class = "btn" })
                                     </li>
@@ -112,7 +117,8 @@ else
                                        "Delete", "Delete", "Posts",
                                        new
                                        {
-                                           id = post.PostId
+                                           id = post.PostId,
+                                           path = $"Groups/Details/{Model.GroupId}"
                                        },
                                        new { @class = "btn" })
                                     </li>
@@ -140,7 +146,7 @@ else
                    new
                    {
                        postId = post.PostId,
-                       returnUrl = $"Groups/Details/{Model.GroupId}"
+                       path = $"Groups/Details/{Model.GroupId}"
                    },
                    new { @class = "btn btn-outline-primary" })
 
@@ -182,7 +188,7 @@ else
                                                            new
                                                            {
                                                                id = comment.CommentId,
-                                                               returnUrl = $"Groups/Details/{Model.GroupId}"
+                                                               path = $"Groups/Details/{Model.GroupId}"
                                                            },
                                                            new { @class = "btn" })
                                                         </li>
@@ -192,7 +198,7 @@ else
                                                            new
                                                            {
                                                                id = comment.CommentId,
-                                                               returnUrl = $"Groups/Details/{Model.GroupId}"
+                                                               path = $"Groups/Details/{Model.GroupId}"
                                                            },
                                                            new { @class = "btn" })
                                                         </li>

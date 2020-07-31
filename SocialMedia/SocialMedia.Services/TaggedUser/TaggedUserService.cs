@@ -196,5 +196,44 @@
                 }
             }
         }
+
+        public async Task UpdateTaggedFriendsInCommentAsync(
+            IList<UserServiceModel> taggedFriends, 
+            int commentId, 
+            string taggerId)
+        
+        {
+            //Get tag friends entities
+            var tagFriendsEntities = await this._data.TagFriends
+                .Where(t => t.CommentId == commentId &&
+                        t.TaggerId == taggerId)
+                .ToListAsync();
+
+            for (int i = 0; i < tagFriendsEntities.Count; i++)
+            {
+                //This action shows that the current friend is not untagged/modified.
+                if (taggedFriends.Any(t => t.Id == tagFriendsEntities[i].TaggedId))
+                {
+                    var taggedFriendIndex = GetTaggedFriendIndex(
+                        taggedFriends.ToList(),
+                        tagFriendsEntities[i].TaggedId);
+                    taggedFriends.RemoveAt(taggedFriendIndex);
+                }
+                //This action shows that the current friend is untagged/modified.
+                else if (!taggedFriends.Any(t => t.Id == tagFriendsEntities[i].TaggedId))
+                {
+                    await RemoveTaggedFriendComment(tagFriendsEntities[i].TaggedId, commentId);
+                }
+            }
+
+            //This action check for newly tagged friends
+            if (taggedFriends.Count > 0)
+            {
+                foreach (var tagged in taggedFriends)
+                {
+                    await TagFriendComment(taggerId, tagged.Id, commentId);
+                }
+            }
+        }
     }
 }

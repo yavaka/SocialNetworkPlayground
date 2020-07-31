@@ -12,6 +12,7 @@
     using SocialMedia.Services.Comment;
     using System.Linq;
     using SocialMedia.Services.User;
+    using SocialMedia.Services.Url;
 
     public class PostsController : Controller
     {
@@ -20,24 +21,35 @@
         private readonly ITaggedUserService _taggedUserService;
         private readonly ICommentService _commentService;
         private readonly IUserService _userService;
+        private readonly IUrlService _urlService;
 
         public PostsController(
             IFriendshipService friendshipService,
             IPostService postService,
             ITaggedUserService taggedUserService,
             ICommentService commentService,
-            IUserService userService)
+            IUserService userService,
+            IUrlService urlService)
         {
             this._friendshipService = friendshipService;
             this._postService = postService;
             this._taggedUserService = taggedUserService;
             this._commentService = commentService;
             this._userService = userService;
+            this._urlService = urlService;
         }
 
         [HttpGet]
-        public async Task<IActionResult> Create([FromQuery]int? groupId)
+        public async Task<IActionResult> Create(int? groupId, string path)
         {
+            //If the page is reloaded without any usage of TempData,
+            //it will be cleared before add a new key value pair.
+            TempData.Clear();
+            if (path != null)
+            {
+                TempData["path"] = path;
+            }
+
             var currentUserId = this._userService
                 .GetUserId(User);
 
@@ -48,14 +60,9 @@
                     Friends = await this._friendshipService
                     .GetFriendsAsync(currentUserId),
                     TaggedFriends = new List<UserServiceModel>()
-                }
+                },
+                GroupId = groupId
             };
-
-            //Get group id from return url
-            if (groupId != null)
-            {
-                viewModel.GroupId = (int)groupId;
-            }
 
             return View(viewModel);
         }
@@ -87,29 +94,38 @@
                         TaggedFriends = viewModel.TagFriends.TaggedFriends
                     });
 
-                //It will be redirected to Group/Details/{id}
-                if (viewModel.GroupId > 0)
+                if (TempData.ContainsKey("path"))
                 {
-                    return RedirectToAction("Details", "Groups", new { id = viewModel.GroupId });
+                    var returnUrl = this._urlService
+                        .GenerateReturnUrl(TempData["path"].ToString(), HttpContext);
+                    return Redirect(returnUrl);
                 }
-                return RedirectToAction("Index", "Profile");
+                else
+                {
+                    return NotFound();
+                }
             }
             return View();
         }
 
         [HttpGet]
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(int id, string path)
         {
-            var post = await this._postService.GetPost(id);
-
-            if (post == null)
+            //If the page is reloaded without any usage of TempData,
+            //it will be cleared before add a new key value pair.
+            TempData.Clear();
+            if (path != null)
             {
-                return NotFound();
+                TempData["path"] = path;
             }
+
+            var post = await this._postService.GetPost(id);
 
             var currentUser = await this._userService
                 .GetCurrentUserAsync(User);
-            if (currentUser.Id != post.Author.Id)
+
+            if (post == null ||
+                currentUser.Id != post.Author.Id)
             {
                 return NotFound();
             }
@@ -129,8 +145,6 @@
             {
                 viewModel.TagFriends = new TagFriendsServiceModel
                 {
-                    //Compare tagged with untagged friends
-                    //For those who are tagged set checked to true
                     Friends = this._taggedUserService
                         .GetUntaggedFriends(post.TaggedFriends.ToList(), friends.ToList())
                         .ToList(),
@@ -174,18 +188,31 @@
                         Content = viewModel.Content
                     });
 
-                if (viewModel.GroupId != null)
+                if (TempData.ContainsKey("path"))
                 {
-                    return RedirectToAction("Details", "Groups", new { id = viewModel.GroupId });
+                    var returnUrl = this._urlService
+                        .GenerateReturnUrl(TempData["path"].ToString(), HttpContext);
+                    return Redirect(returnUrl);
                 }
-                return RedirectToAction("Index", "Profile");
+                else
+                {
+                    return NotFound();
+                }
             }
             return View(viewModel);
         }
 
         [HttpGet]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id, string path)
         {
+            //If the page is reloaded without any usage of TempData,
+            //it will be cleared before add a new key value pair.
+            TempData.Clear();
+            if (path != null)
+            {
+                TempData["path"] = path;
+            }
+
             var post = await this._postService
                 .GetPost(id);
 
@@ -216,11 +243,16 @@
             await this._postService.DeletePost(id);
 
 
-            if (groupId != null)
+            if (TempData.ContainsKey("path"))
             {
-                return RedirectToAction("Details", "Groups", new { id = (int)groupId });
+                var returnUrl = this._urlService
+                    .GenerateReturnUrl(TempData["path"].ToString(), HttpContext);
+                return Redirect(returnUrl);
             }
-            return RedirectToAction("Index", "Profile");
+            else
+            {
+                return NotFound();
+            }
         }
     }
 }

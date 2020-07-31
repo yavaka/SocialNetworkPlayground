@@ -12,6 +12,8 @@
     using SocialMedia.Services.Comment;
     using SocialMedia.Services.TaggedUser;
     using SocialMedia.Services.User;
+    using System.Linq;
+    using SocialMedia.Services.Url;
 
     public class CommentsController : Controller
     {
@@ -19,55 +21,46 @@
         private readonly ICommentService _commentService;
         private readonly ITaggedUserService _taggedUserService;
         private readonly IUserService _userService;
+        private readonly IUrlService _urlService;
 
         public CommentsController(
             IFriendshipService friendshipService,
             ICommentService commentService,
             ITaggedUserService taggedUserService,
-            IUserService userService)
+            IUserService userService,
+            IUrlService urlService)
         {
             this._friendshipService = friendshipService;
             this._commentService = commentService;
             this._taggedUserService = taggedUserService;
             this._userService = userService;
+            this._urlService = urlService;
         }
 
         [HttpGet]
-        public async Task<IActionResult> Create(int postId)
+        public async Task<IActionResult> Create(int postId, string path)
         {
-            var currentUser = await this._userService
-                .GetCurrentUserAsync(User);
+            //If the page is reloaded without any usage of TempData,
+            //it will be cleared before add a new key value pair.
+            TempData.Clear();
+            if (path != null)
+            {
+                TempData["path"] = path;
+            }
+
+            var currentUserId = this._userService
+                .GetUserId(User);
 
             var viewModel = new CommentViewModel
             {
-                Author = currentUser,
-                PostId = postId
+                PostId = postId,
+                TagFriends = new TagFriendsServiceModel()
+                {
+                    Friends = await this._friendshipService
+                        .GetFriendsAsync(currentUserId),
+                    TaggedFriends = new List<UserServiceModel>()
+                }
             };
-
-            //Locally tagged friends
-            if (TempData.ContainsKey("tagFriendsServiceModel"))
-            {
-                viewModel.TagFriends = TempData.Get<TagFriendsServiceModel>("tagFriendsServiceModel");
-                TempData.Keep("tagFriendsServiceModel");
-            }
-            else
-            {
-                //viewModel.TagFriends = new TagFriendsServiceModel()
-                //{
-                //    UntaggedFriends = await this._friendshipService
-                //            .GetFriendsAsync(currentUser.Id),
-                //    TaggedFriends = new List<UserServiceModel>(),
-                //    PostId = postId
-                //};
-                TempData.Set<TagFriendsServiceModel>(
-                    "tagFriendsServiceModel",
-                    viewModel.TagFriends);
-            }
-
-            if (!TempData.ContainsKey("Comments"))
-            {
-                TempData.Set("Comments", "Create");
-            }
 
             return View(viewModel);
         }
@@ -78,14 +71,16 @@
         {
             if (ModelState.IsValid)
             {
-                //Get locally tagged friends
-                if (TempData.ContainsKey("tagFriendsServiceModel"))
-                {
-                    viewModel.TagFriends = TempData.Get<TagFriendsServiceModel>("tagFriendsServiceModel");
-                }
-
                 var currentUser = await this._userService
                     .GetCurrentUserAsync(User);
+
+                //Get tagged friends
+                if (viewModel.TagFriends.Friends.Any(c => c.Checked == true))
+                {
+                    viewModel.TagFriends.TaggedFriends = viewModel.TagFriends.Friends
+                        .Where(c => c.Checked == true)
+                        .ToList();
+                }
 
                 await this._commentService
                     .AddComment(new CommentServiceModel
@@ -97,63 +92,72 @@
                         TaggedFriends = viewModel.TagFriends.TaggedFriends
                     });
 
-                if (TempData.ContainsKey("group"))
+                if (TempData.ContainsKey("path"))
                 {
-                    var group = TempData.Get<Group>("group");
-                    TempData.Clear();
-                    return RedirectToAction(
-                        "Details", "Groups", new { groupId = group.GroupId });
+                    var returnUrl = this._urlService
+                        .GenerateReturnUrl(TempData["path"].ToString(), HttpContext);
+                    return Redirect(returnUrl);
                 }
-
-                if (TempData.ContainsKey("userId"))
+                else
                 {
-                    var userId = TempData.Get<string>("userId");
-                    TempData.Clear();
-                    return RedirectToAction("Index", "Profile", new { userId = userId });
+                    return NotFound();
                 }
-                TempData.Clear();
-                return RedirectToAction("Index", "Profile");
             }
             return View();
         }
 
-        public async Task<IActionResult> Edit(int id)
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id, string path)
         {
+            //If the page is reloaded without any usage of TempData,
+            //it will be cleared before add a new key value pair.
+            TempData.Clear();
+            if (path != null)
+            {
+                TempData["path"] = path;
+            }
+
             var comment = await this._commentService
                 .GetComment(id);
 
-            if (comment == null)
+            var currentUser = await this._userService
+                .GetCurrentUserAsync(User);
+
+            if (comment == null ||
+                currentUser.Id != comment.Author.Id)
             {
                 return NotFound();
             }
 
-            var viewModel = new CommentViewModel(comment);
+            var viewModel = new CommentViewModel
+            {
+                CommentId = comment.CommentId,
+                Content = comment.Content,
+                DatePosted = comment.DatePosted,
+                Author = comment.Author,
+                PostId = comment.PostId
+            };
 
             var friends = await this._friendshipService
                 .GetFriendsAsync(viewModel.Author.Id);
 
             if (comment.TaggedFriends.Count > 0)
             {
-                //viewModel.TagFriends = new TagFriendsServiceModel
-                //{
-                //    UntaggedFriends = this._taggedUserService
-                //        .GetUntaggedFriends(comment.TaggedFriends, friends),
-                //    TaggedFriends = comment.TaggedFriends
-                //};
+                viewModel.TagFriends = new TagFriendsServiceModel
+                {
+                    Friends = this._taggedUserService
+                        .GetUntaggedFriends(comment.TaggedFriends.ToList(), friends.ToList())
+                        .ToList(),
+                    TaggedFriends = new List<UserServiceModel>()
+                };
             }
             else
             {
-                //viewModel.TagFriends = new TagFriendsServiceModel
-                //{
-                //    UntaggedFriends = await this._friendshipService
-                //        .GetFriendsAsync(viewModel.Author.Id),
-                //    TaggedFriends = new List<UserServiceModel>()
-                //};
-            }
-
-            if (!TempData.ContainsKey("Comments"))
-            {
-                TempData.Set("Comments", "Edit");
+                viewModel.TagFriends = new TagFriendsServiceModel
+                {
+                    Friends = friends,
+                    TaggedFriends = new List<UserServiceModel>()
+                };
             }
 
             return View(viewModel);
@@ -165,42 +169,49 @@
         {
             if (ModelState.IsValid)
             {
+                var currentUserId = this._userService.GetUserId(User);
+
+                viewModel.TagFriends.TaggedFriends = viewModel.TagFriends.Friends
+                    .Where(c => c.Checked == true)
+                    .ToList();
+
+                await this._taggedUserService.UpdateTaggedFriendsInCommentAsync(
+                    viewModel.TagFriends.TaggedFriends,
+                    viewModel.CommentId,
+                    currentUserId);
+
                 await this._commentService
-                    .EditComment(new CommentServiceModel 
+                    .EditComment(new CommentServiceModel
                     {
                         CommentId = viewModel.CommentId,
                         Content = viewModel.Content
                     });
 
-                var group = new Group();
-                var userId = string.Empty;
-
-                if (TempData.ContainsKey("group"))
+                if (TempData.ContainsKey("path"))
                 {
-                    group = TempData.Get<Group>("group");
+                    var returnUrl = this._urlService
+                        .GenerateReturnUrl(TempData["path"].ToString(), HttpContext);
+                    return Redirect(returnUrl);
                 }
-                else if (TempData.ContainsKey("userId"))
+                else
                 {
-                    userId = TempData.Get<string>("userId");
+                    return NotFound();
                 }
-
-                TempData.Clear();
-                if (group.GroupId > 0)
-                {
-                    return RedirectToAction("Details", "Groups", new { id = group.GroupId });
-                }
-                else if(userId != string.Empty)
-                {
-                   return RedirectToAction("Index", "Profile", new { userId = userId});
-                }
-                return RedirectToAction("Index", "Profile");
             }
             return View(viewModel);
         }
 
         [HttpGet]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id, string path)
         {
+            //If the page is reloaded without any usage of TempData,
+            //it will be cleared before add a new key value pair.
+            TempData.Clear();
+            if (path != null)
+            {
+                TempData["path"] = path;
+            }
+
             var comment = await this._commentService
                 .GetComment((int)id);
 
@@ -219,28 +230,13 @@
             await this._taggedUserService.DeleteTaggedFriendsCommentId(id);
             await this._commentService.DeleteComment(id);
 
-            var group = new Group();
-            var userId = string.Empty;
-
-            if (TempData.ContainsKey("group"))
+            if (TempData.ContainsKey("path"))
             {
-                group = TempData.Get<Group>("group");
+                var returnUrl = this._urlService
+                    .GenerateReturnUrl(TempData["path"].ToString(), HttpContext);
+                return Redirect(returnUrl);
             }
-            else if (TempData.ContainsKey("userId"))
-            {
-                userId = TempData.Get<string>("userId");
-            }
-
-            TempData.Clear();
-            if (group.GroupId > 0)
-            {
-                return RedirectToAction("Details", "Groups", new { id = group.GroupId });
-            }
-            else if (userId != string.Empty)
-            {
-                return RedirectToAction("Index", "Profile", new { userId = userId });
-            }
-            return RedirectToAction("Index", "Profile");
+            return NotFound();
         }
     }
 }

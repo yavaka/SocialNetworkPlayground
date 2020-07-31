@@ -130,7 +130,8 @@ Model.Message == "1")
         {
             <!-- New Post Btn -->
             @Html.ActionLink(
-                    "Add Post", "Create", "Posts", null,
+                    "Add Post", "Create", "Posts",
+                    new { path = $"Profile/Index/{ Model.User.Id }" },
                     new { @class = "col-md-12 btn btn-outline-primary", @style = "margin: 20px" })
         }
 
@@ -166,13 +167,21 @@ Model.Message == "1")
                                         <li>
                                             @Html.ActionLink(
                              "Edit", "Edit", "Posts",
-                             new { id = post.PostId },
+                             new
+                             {
+                                 id = post.PostId,
+                                 path = $"Profile/Index/{ Model.User.Id }"
+                             },
                              new { @class = "btn" })
                                         </li>
                                         <li>
                                             @Html.ActionLink(
                              "Delete", "Delete", "Posts",
-                             new { id = post.PostId },
+                             new 
+                             {
+                                 id = post.PostId,
+                                 path = $"Profile/Index/{ Model.User.Id }"
+                             },
                              new { @class = "btn" })
                                         </li>
                                     </ul>
@@ -196,7 +205,11 @@ Model.Message == "1")
                         <!-- New Comment Btn -->
                         @Html.ActionLink(
                          "Add Comment", "Create", "Comments",
-                         new { postId = post.PostId },
+                         new
+                         {
+                             postId = post.PostId,
+                             path = $"Profile/Index/{ Model.User.Id }"
+                         },
                          new { @class = "btn btn-outline-primary" })
 
                         <hr style="height:1px;border-width:0;color:skyblue;background-color:skyblue">
@@ -234,13 +247,21 @@ Model.Message == "1")
                                                             <li>
                                                                 @Html.ActionLink(
                                                  "Edit", "Edit", "Comments",
-                                                 new { id = comment.CommentId },
+                                                 new
+                                                 {
+                                                     id = comment.CommentId,
+                                                     path = $"Profile/Index/{ Model.User.Id}"
+                                                 },
                                                  new { @class = "btn" })
                                                             </li>
                                                             <li>
                                                                 @Html.ActionLink(
                                                  "Delete", "Delete", "Comments",
-                                                 new { id = comment.CommentId },
+                                                 new
+                                                 {
+                                                     id = comment.CommentId,
+                                                     path = $"Profile/Index/{ Model.User.Id}"
+                                                 },
                                                  new { @class = "btn" })
                                                             </li>
                                                         </ul>

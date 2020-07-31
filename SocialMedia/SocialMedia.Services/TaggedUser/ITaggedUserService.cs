@@ -19,6 +19,8 @@
         Task<EntityState> TagFriendComment(string taggerId, string taggedId, int commentId);
         
         Task UpdateTaggedFriendsInPostAsync(IList<UserServiceModel> taggedFriends, int postId, string taggerId);
+        
+        Task UpdateTaggedFriendsInCommentAsync(IList<UserServiceModel> taggedFriends, int commentId, string taggerId);
 
         Task<EntityState> RemoveTaggedFriendPost(string taggedId, int postId);
 
@@ -28,11 +30,18 @@
         
         Task<EntityState> DeleteTaggedFriendsCommentId(int commentId);
 
+        /// <summary>
+        ///  Compare tagged with untagged friends
+        ///  For those who are tagged set checked to true
+        /// </summary>
+        /// <param name="taggedFriends"></param>
+        /// <param name="friends"></param>
+        /// <returns></returns>
         ICollection<UserServiceModel> GetUntaggedFriends(
             List<UserServiceModel> taggedFriends,
             List<UserServiceModel> friends);
 
         Task DeleteTaggedFriendsInComments(ICollection<int> commentsIds);
-        
+
     }
 }
