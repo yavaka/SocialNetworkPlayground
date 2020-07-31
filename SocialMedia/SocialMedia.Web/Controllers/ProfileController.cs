@@ -4,7 +4,6 @@
     using System.Threading.Tasks;
     using SocialMedia.Services.Models;
     using SocialMedia.Services.Profile;
-    using SocialMedia.Web.Infrastructure;
     using SocialMedia.Services.User;
 
     public class ProfileController : Controller
@@ -21,7 +20,9 @@
         }
 
         [HttpGet]
-        public async Task<IActionResult> IndexAsync(string userId)
+        public async Task<IActionResult> IndexAsync(
+            string userId, 
+            string friendshipStatus)
         {
             var currentUserId = this._userService
                 .GetUserId(User);
@@ -32,18 +33,13 @@
             {
                 profile = await this._profileService.GetProfileAsync(userId);
 
-                if (!TempData.ContainsKey("friendshipStatus"))
+                if (friendshipStatus == null)
                 {
                     return RedirectToAction("FriendshipStatus", "Friendships", new { userId = userId });
                 }
 
                 //Depending on the friendship status it will be generated different layout.
-                profile.Message = TempData["friendshipStatus"] as string;
-                
-                if (!TempData.ContainsKey("userId"))
-                {
-                    TempData.Set("userId", profile.User.Id);
-                }
+                profile.Message = friendshipStatus;
             }
             else //Gets the current user`s profile
             {

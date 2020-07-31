@@ -62,20 +62,22 @@
             var friendshipStatus = await this._friendshipService
                 .GetFriendshipStatusAsync(currentUserId, userId);
 
+            var status = string.Empty;
+
             switch (friendshipStatus)
             {
                 case -1:
-                    TempData["friendshipStatus"] = "-1";
+                    status = "-1";
                     break;
                 case 0:
-                    TempData["friendshipStatus"] = $"{friendshipStatus} {invokedFrom}";
+                    status = $"{friendshipStatus} {invokedFrom}";
                     break;
                 case 1:
-                    TempData["friendshipStatus"] = friendshipStatus.ToString();
+                    status = friendshipStatus.ToString();
                     break;
             }
 
-            return RedirectToAction("Index", "Profile", new { userId = userId });
+            return RedirectToAction("Index", "Profile", new { userId = userId, friendshipStatus = status });
         }
 
         public async Task<IActionResult> FriendRequests()
