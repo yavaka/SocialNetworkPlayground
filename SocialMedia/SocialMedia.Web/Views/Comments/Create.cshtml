@@ -43,7 +43,7 @@
                             </div>
                             <div class="modal-body">
                                 <ul>
-                                    @if (Model.TagFriends.UntaggedFriends.Count == 0)
+                                    @if (Model.TagFriends.Friends.Count == 0)
                                     {
                                         <li>
                                             @Model.Author.UserName, you do not have any more friends.
@@ -51,7 +51,7 @@
                                     }
                                     else
                                     {
-                                        @foreach (var user in Model.TagFriends.UntaggedFriends)
+                                        @foreach (var user in Model.TagFriends.Friends)
                                         {
                                             <li>
                                                 @Html.ActionLink(

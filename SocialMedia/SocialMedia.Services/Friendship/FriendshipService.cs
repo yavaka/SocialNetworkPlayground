@@ -14,7 +14,7 @@
 
         public FriendshipService(SocialMediaDbContext data)=>this._data = data;
 
-        public async Task<ICollection<UserServiceModel>> GetFriendsAsync(string userId)
+        public async Task<IList<UserServiceModel>> GetFriendsAsync(string userId)
         {
             //Get current user friendships where it is addressee or requester
             var friendships = await GetFriendshipsByUserIdAsync(userId);

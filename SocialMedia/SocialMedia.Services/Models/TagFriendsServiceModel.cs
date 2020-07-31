@@ -4,9 +4,9 @@
 
     public class TagFriendsServiceModel
     {
-        public ICollection<UserServiceModel> UntaggedFriends { get; set; }
+        public IList<UserServiceModel> Friends { get; set; }
 
-        public ICollection<UserServiceModel> TaggedFriends { get; set; }
+        public IList<UserServiceModel> TaggedFriends { get; set; }
 
         public int? PostId { get; set; }
     }

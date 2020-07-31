@@ -13,25 +13,11 @@
             <!--Post model-->
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="@Model.PostId" />
-            @*@<input type="hidden" asp-for="@Model.AuthorId" />*@
+            <input type="hidden" asp-for="@Model.GroupId" value="@Model.GroupId" />
             <div class="form-group">
-                @*--Tagged users--*@
-                @if (Model.TagFriends.TaggedFriends.Count > 0)
-                {
-                    <label>@Model.Author.UserName is with </label>
-                    foreach (var user in Model.TagFriends.TaggedFriends)
-                    {
-                        <a href="#" class="badge badge-primary">@user.UserName </a>
-                    }
-                }
-                else
-                {
-                    <label>@Model.Author.UserName</label>
-                }
                 <input asp-for="@Model.Content" class="form-control" />
                 <span asp-validation-for="@Model.Content" class="text-danger"></span>
             </div>
-
             <!--Tag friends-->
             <div class="col-md-6">
                 <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Tag</button>
@@ -42,62 +28,25 @@
                                 <h4 class="modal-title">Friends</h4>
                             </div>
                             <div class="modal-body">
-                                <ul>
-                                    @if (Model.TagFriends.UntaggedFriends.Count == 0)
+                                <table>
+                                    @for (int i = 0; i < Model.TagFriends.Friends.Count; i++)
                                     {
-                                        <li>
-                                            @Model.Author.UserName, you do not have any more friends.
-                                        </li>
+                                        <tr>
+                                            <td>
+                                                @Html.HiddenFor(m => Model.TagFriends.Friends[i].Id)
+                                                @Html.CheckBoxFor(m => Model.TagFriends.Friends[i].Checked)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(m => Model.TagFriends.Friends[i].UserName)
+                                            </td>
+                                        </tr>
                                     }
-                                    else
-                                    {
-                                        @foreach (var user in Model.TagFriends.UntaggedFriends)
-                                        {
-                                            <li>
-                                                @Html.ActionLink(
-                                               user.UserName, 
-                                               "TagFriend", 
-                                               "TagFriends", 
-                                               new { id = Model.PostId, taggedId = user.Id })
-                                            </li>
-                                        }
-                                    }
-                                </ul>
+                                </table>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            @if (Model.TagFriends.TaggedFriends.Count > 0)
-            {
-                <!--Remove tagged friend-->
-                <div class="col-md-6">
-                    <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal2">Remove tags</button>
-                    <div class="modal fade" id="myModal2" role="dialog">
-                        <div class="modal-dialog modal-sm">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h4 class="modal-title">Remove tags</h4>
-                                </div>
-                                <div class="modal-body">
-                                    <ul>
-                                        @foreach (var user in Model.TagFriends.TaggedFriends)
-                                        {
-                                            <li>
-                                                @Html.ActionLink(
-                                               user.UserName, 
-                                               "RemoveTaggedFriend", 
-                                               "TagFriends", 
-                                               new { taggedId = user.Id, id = Model.PostId })
-                                            </li>
-                                        }
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
             <div class="form-group">
                 <input type="submit" value="Update" class="btn btn-primary" />
             </div>

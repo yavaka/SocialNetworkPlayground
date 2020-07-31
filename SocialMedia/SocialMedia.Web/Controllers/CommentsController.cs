@@ -52,13 +52,13 @@
             }
             else
             {
-                viewModel.TagFriends = new TagFriendsServiceModel()
-                {
-                    UntaggedFriends = await this._friendshipService
-                            .GetFriendsAsync(currentUser.Id),
-                    TaggedFriends = new List<UserServiceModel>(),
-                    PostId = postId
-                };
+                //viewModel.TagFriends = new TagFriendsServiceModel()
+                //{
+                //    UntaggedFriends = await this._friendshipService
+                //            .GetFriendsAsync(currentUser.Id),
+                //    TaggedFriends = new List<UserServiceModel>(),
+                //    PostId = postId
+                //};
                 TempData.Set<TagFriendsServiceModel>(
                     "tagFriendsServiceModel",
                     viewModel.TagFriends);
@@ -134,21 +134,21 @@
 
             if (comment.TaggedFriends.Count > 0)
             {
-                viewModel.TagFriends = new TagFriendsServiceModel
-                {
-                    UntaggedFriends = this._taggedUserService
-                        .GetUntaggedFriends(comment.TaggedFriends, friends),
-                    TaggedFriends = comment.TaggedFriends
-                };
+                //viewModel.TagFriends = new TagFriendsServiceModel
+                //{
+                //    UntaggedFriends = this._taggedUserService
+                //        .GetUntaggedFriends(comment.TaggedFriends, friends),
+                //    TaggedFriends = comment.TaggedFriends
+                //};
             }
             else
             {
-                viewModel.TagFriends = new TagFriendsServiceModel
-                {
-                    UntaggedFriends = await this._friendshipService
-                        .GetFriendsAsync(viewModel.Author.Id),
-                    TaggedFriends = new List<UserServiceModel>()
-                };
+                //viewModel.TagFriends = new TagFriendsServiceModel
+                //{
+                //    UntaggedFriends = await this._friendshipService
+                //        .GetFriendsAsync(viewModel.Author.Id),
+                //    TaggedFriends = new List<UserServiceModel>()
+                //};
             }
 
             if (!TempData.ContainsKey("Comments"))

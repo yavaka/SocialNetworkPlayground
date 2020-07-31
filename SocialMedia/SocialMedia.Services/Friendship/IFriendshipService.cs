@@ -7,7 +7,7 @@
 
     public interface IFriendshipService
     {
-        Task<ICollection<UserServiceModel>> GetFriendsAsync(string userId);
+        Task<IList<UserServiceModel>> GetFriendsAsync(string userId);
 
         Task<ICollection<UserServiceModel>> GetNonFriendsAsync(string userId);
 

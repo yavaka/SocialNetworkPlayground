@@ -35,14 +35,18 @@
                             @if (Model.Admin.Id == Model.CurrentUserId)
                             {
                                 <li>
-                                    <button class="btn-primary" 
-                                            asp-action="Edit" 
-                                            asp-route-id="@Model.GroupId">Edit</button>
+                                    <button class="btn-primary"
+                                            asp-action="Edit"
+                                            asp-route-id="@Model.GroupId">
+                                        Edit
+                                    </button>
                                 </li>
                                 <li>
-                                    <button class="btn-primary" 
-                                            asp-action = "Delete" 
-                                            asp-route-id = "@Model.GroupId" >Delete</button>
+                                    <button class="btn-primary"
+                                            asp-action="Delete"
+                                            asp-route-id="@Model.GroupId">
+                                        Delete
+                                    </button>
 
                                 </li>
                             }
@@ -66,7 +70,7 @@ else
     <!-- New Post Btn -->
     @Html.ActionLink(
             "Add Post", "Create", "Posts",
-            new { id = Model.GroupId },
+            new { groupId = Model.GroupId },
             new
             {
                 @class = "col-md-12 btn btn-outline-primary",
@@ -99,8 +103,7 @@ else
                                        "Edit", "Edit", "Posts",
                                        new
                                        {
-                                           id = post.PostId,
-                                           returnUrl = $"Groups/Details/{Model.GroupId}"
+                                           id = post.PostId
                                        },
                                        new { @class = "btn" })
                                     </li>
@@ -109,8 +112,7 @@ else
                                        "Delete", "Delete", "Posts",
                                        new
                                        {
-                                           id = post.PostId,
-                                           returnUrl = $"Groups/Details/{Model.GroupId}"
+                                           id = post.PostId
                                        },
                                        new { @class = "btn" })
                                     </li>

@@ -1,6 +1,5 @@
 ﻿namespace SocialMedia.Services.Models
 {
-    using SocialMedia.Data.Models;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -21,7 +20,9 @@
        
         public UserServiceModel Author { get; set; }
        
-        public Group Group { get; set; }////// Change with GroupServiceModel
+        public int? GroupId { get; set; }
+
+        public GroupServiceModel Group{ get; set; }
 
         public ICollection<UserServiceModel> TaggedFriends{ get; set; }
 

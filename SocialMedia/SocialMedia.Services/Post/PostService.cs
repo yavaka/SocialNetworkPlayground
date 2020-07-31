@@ -40,9 +40,9 @@
                         .ToList())
             };
 
-            if (serviceModel.Group != null)
+            if (serviceModel.GroupId != null)
             {
-                post.GroupId = serviceModel.Group.GroupId;
+                post.GroupId = serviceModel.GroupId;
             }
 
             await this._data.Posts.AddAsync(post);
@@ -83,7 +83,12 @@
                 Content = p.Content,
                 DatePosted = p.DatePosted,
                 Author = new UserServiceModel(p.Author),
-                Group = p.Group,
+                GroupId = p.GroupId,
+                Group = new GroupServiceModel 
+                {
+                    Title = p.Group.Title,
+                    Description = p.Group.Description
+                },
                 TaggedFriends = p.TaggedUsers
                     .Select(t => new UserServiceModel(t.Tagged))
                     .ToList()
@@ -100,7 +105,12 @@
                     Content = p.Content,
                     DatePosted = p.DatePosted,
                     Author = new UserServiceModel(p.Author),
-                    Group = p.Group,
+                    GroupId = p.GroupId,
+                    Group = new GroupServiceModel
+                    {
+                        Title = p.Group.Title,
+                        Description = p.Group.Description
+                    },
                     TaggedFriends = p.TaggedUsers
                         .Select(t => new UserServiceModel(t.Tagged))
                         .ToList()
@@ -139,6 +149,13 @@
             }
 
             return posts;
+        }
+
+        public async Task<int?> GetGroupIdOfPost(int id)
+        {
+            var post = await GetPost(id);
+
+            return post.GroupId;
         }
     }
 }

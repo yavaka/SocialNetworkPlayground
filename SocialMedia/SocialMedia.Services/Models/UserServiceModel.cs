@@ -2,8 +2,6 @@
 {
     using SocialMedia.Data.Models;
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
 
     public class UserServiceModel
     {
@@ -29,5 +27,10 @@
         public string Country { get; set; }
 
         public DateTime? DateOfBirth { get; set; }
+
+        /// <summary>
+        /// Wether the check box in a view is checked
+        /// </summary>
+        public bool Checked { get; set; } = false;
     }
 }

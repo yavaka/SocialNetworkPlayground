@@ -17,6 +17,8 @@
         Task<EntityState> TagFriendPost(string taggerId, string taggedId, int postId);
 
         Task<EntityState> TagFriendComment(string taggerId, string taggedId, int commentId);
+        
+        Task UpdateTaggedFriendsInPostAsync(IList<UserServiceModel> taggedFriends, int postId, string taggerId);
 
         Task<EntityState> RemoveTaggedFriendPost(string taggedId, int postId);
 
@@ -27,9 +29,10 @@
         Task<EntityState> DeleteTaggedFriendsCommentId(int commentId);
 
         ICollection<UserServiceModel> GetUntaggedFriends(
-            ICollection<UserServiceModel> taggedFriends,
-            ICollection<UserServiceModel> friends);
+            List<UserServiceModel> taggedFriends,
+            List<UserServiceModel> friends);
 
         Task DeleteTaggedFriendsInComments(ICollection<int> commentsIds);
+        
     }
 }
