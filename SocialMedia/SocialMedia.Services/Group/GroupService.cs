@@ -124,7 +124,14 @@
                 GroupId = g.GroupId,
                 Title = g.Title,
                 Members = g.Members
-                    .Select(u => new UserServiceModel(u.User))
+                    .Select(u => new UserServiceModel 
+                    {
+                        Id = u.User.Id,
+                        UserName = u.User.UserName,
+                        FullName = u.User.FullName,
+                        Country = u.User.Country,
+                        DateOfBirth = u.User.DOB
+                    })
                     .ToList(),
                 AdminId = g.Members
                     .FirstOrDefault(a => a.Admin == true)
@@ -189,7 +196,14 @@
                 Title = g.Title,
                 Description = g.Description,
                 Members = g.Members
-                    .Select(u => new UserServiceModel(u.User))
+                     .Select(u => new UserServiceModel
+                     {
+                         Id = u.User.Id,
+                         UserName = u.User.UserName,
+                         FullName = u.User.FullName,
+                         Country = u.User.Country,
+                         DateOfBirth = u.User.DOB
+                     })
                     .ToList(),
                 AdminId = g.Members
                     .FirstOrDefault(a => a.Admin == true)

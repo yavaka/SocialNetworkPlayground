@@ -40,7 +40,14 @@
         {
             var nonFriends = await this._data.Users
                 .Where(i => i.Id != userId)
-                .Select(u => new UserServiceModel(u))
+                .Select(u => new UserServiceModel
+                {
+                    Id = u.Id,
+                    UserName = u.UserName,
+                    FullName = u.FullName,
+                    Country = u.Country,
+                    DateOfBirth = u.DOB
+                })
                 .ToListAsync();
 
             var friends = await GetFriendsAsync(userId);
@@ -63,8 +70,22 @@
                             i.RequesterId == userId && i.Status == Status.Accepted)
                 .Select(f => new FriendshipServiceModel
                 {
-                    Addressee = new UserServiceModel(f.Addressee),
-                    Requester = new UserServiceModel(f.Requester)
+                    Addressee = new UserServiceModel 
+                    {
+                        Id = f.Addressee.Id,
+                        UserName = f.Addressee.UserName,
+                        FullName = f.Addressee.FullName,
+                        Country = f.Addressee.Country,
+                        DateOfBirth = f.Addressee.DOB
+                    },
+                    Requester = new UserServiceModel 
+                    {
+                        Id = f.Requester.Id,
+                        UserName = f.Requester.UserName,
+                        FullName = f.Requester.FullName,
+                        Country = f.Requester.Country,
+                        DateOfBirth = f.Requester.DOB
+                    }
                 })
                 .ToListAsync();
 
@@ -95,13 +116,27 @@
         => await this._data
             .Friendships
                 .Where(a => a.AddresseeId == currentUserId && a.Status == Status.Pending)
-                .Select(r => new UserServiceModel(r.Requester))
+                .Select(r => new UserServiceModel 
+                {
+                        Id = r.Requester.Id,
+                        UserName = r.Requester.UserName,
+                        FullName = r.Requester.FullName,
+                        Country = r.Requester.Country,
+                        DateOfBirth = r.Requester.DOB
+                })
                 .ToListAsync();
 
         public async Task<IEnumerable<UserServiceModel>> GetPendingRequestsAsync(string currentUserId)
         => await this._data.Friendships
                 .Where(r => r.RequesterId == currentUserId && r.Status == Status.Pending)
-                .Select(a => new UserServiceModel(a.Addressee))
+                .Select(a => new UserServiceModel 
+                {
+                    Id = a.Addressee.Id,
+                    UserName = a.Addressee.UserName,
+                    FullName = a.Addressee.FullName,
+                    Country = a.Addressee.Country,
+                    DateOfBirth = a.Addressee.DOB
+                })
                 .ToListAsync();
 
         public async Task SendRequestAsync(string currentUserId, string addresseeId)

@@ -76,15 +76,29 @@
                 PostId = p.PostId,
                 Content = p.Content,
                 DatePosted = p.DatePosted,
-                Author = new UserServiceModel(p.Author),
+                Author = new UserServiceModel
+                {
+                    Id = p.Author.Id,
+                    UserName = p.Author.UserName,
+                    FullName = p.Author.FullName,
+                    Country = p.Author.Country,
+                    DateOfBirth = p.Author.DOB
+                },
                 GroupId = p.GroupId,
-                Group = new GroupServiceModel 
+                Group = new GroupServiceModel
                 {
                     Title = p.Group.Title,
                     Description = p.Group.Description
                 },
                 TaggedFriends = p.TaggedUsers
-                    .Select(t => new UserServiceModel(t.Tagged))
+                    .Select(t => new UserServiceModel 
+                    {
+                        Id = t.Tagged.Id,
+                        UserName = t.Tagged.UserName,
+                        FullName = t.Tagged.FullName,
+                        Country = t.Tagged.Country,
+                        DateOfBirth = t.Tagged.DOB
+                    })
                     .ToList()
             })
             .FirstOrDefaultAsync(i => i.PostId == id);
@@ -98,7 +112,14 @@
                     PostId = p.PostId,
                     Content = p.Content,
                     DatePosted = p.DatePosted,
-                    Author = new UserServiceModel(p.Author),
+                    Author = new UserServiceModel
+                    {
+                        Id = p.Author.Id,
+                        UserName = p.Author.UserName,
+                        FullName = p.Author.FullName,
+                        Country = p.Author.Country,
+                        DateOfBirth = p.Author.DOB
+                    },
                     GroupId = p.GroupId,
                     Group = new GroupServiceModel
                     {
@@ -106,7 +127,14 @@
                         Description = p.Group.Description
                     },
                     TaggedFriends = p.TaggedUsers
-                        .Select(t => new UserServiceModel(t.Tagged))
+                        .Select(t => new UserServiceModel
+                        {
+                            Id = t.Tagged.Id,
+                            UserName = t.Tagged.UserName,
+                            FullName = t.Tagged.FullName,
+                            Country = t.Tagged.Country,
+                            DateOfBirth = t.Tagged.DOB
+                        })
                         .ToList()
                 })
                 .ToList();
@@ -129,9 +157,23 @@
                    PostId = p.PostId,
                    Content = p.Content,
                    DatePosted = p.DatePosted,
-                   Author = new UserServiceModel(p.Author),
+                   Author = new UserServiceModel
+                   {
+                       Id = p.Author.Id,
+                       UserName = p.Author.UserName,
+                       FullName = p.Author.FullName,
+                       Country = p.Author.Country,
+                       DateOfBirth = p.Author.DOB
+                   },
                    TaggedFriends = p.TaggedUsers
-                       .Select(t => new UserServiceModel(t.Tagged))
+                       .Select(t => new UserServiceModel
+                       {
+                           Id = t.Tagged.Id,
+                           UserName = t.Tagged.UserName,
+                           FullName = t.Tagged.FullName,
+                           Country = t.Tagged.Country,
+                           DateOfBirth = t.Tagged.DOB
+                       })
                        .ToList()
                })
                .ToList();

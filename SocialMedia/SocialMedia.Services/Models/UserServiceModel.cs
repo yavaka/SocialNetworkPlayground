@@ -5,19 +5,6 @@
 
     public class UserServiceModel
     {
-        public UserServiceModel()
-        {
-        }
-
-        public UserServiceModel(User user)
-        {
-            this.Id = user.Id;
-            this.UserName = user.UserName;
-            this.FullName = user.FullName;
-            this.Country = user.Country;
-            this.DateOfBirth = user.DOB;
-        }
-
         public string Id { get; set; }
 
         public string FullName { get; set; }

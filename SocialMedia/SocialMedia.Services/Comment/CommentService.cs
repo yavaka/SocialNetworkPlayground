@@ -68,10 +68,24 @@
                 CommentId = c.Id,
                 Content = c.Content,
                 DatePosted = c.DatePosted,
-                Author = new UserServiceModel(c.Author),
+                Author = new UserServiceModel 
+                {
+                    Id = c.Author.Id,
+                    UserName = c.Author.UserName,
+                    FullName = c.Author.FullName,
+                    Country = c.Author.Country,
+                    DateOfBirth = c.Author.DOB
+                },
                 PostId = c.CommentedPostId,
                 TaggedFriends = c.TaggedUsers
-                    .Select(t => new UserServiceModel(t.Tagged))
+                    .Select(t => new UserServiceModel 
+                    {
+                        Id = t.Tagged.Id,
+                        UserName = t.Tagged.UserName,
+                        FullName = t.Tagged.FullName,
+                        Country = t.Tagged.Country,
+                        DateOfBirth = t.Tagged.DOB
+                    })
                     .ToList()
             })
             .FirstOrDefaultAsync(i =>i.CommentId == id);
@@ -84,10 +98,24 @@
                 CommentId = c.Id,
                 Content = c.Content,
                 DatePosted = c.DatePosted,
-                Author = new UserServiceModel(c.Author),
+                Author = new UserServiceModel
+                {
+                    Id = c.Author.Id,
+                    UserName = c.Author.UserName,
+                    FullName = c.Author.FullName,
+                    Country = c.Author.Country,
+                    DateOfBirth = c.Author.DOB
+                },
                 PostId = c.CommentedPostId,
                 TaggedFriends = c.TaggedUsers
-                    .Select(t => new UserServiceModel(t.Tagged))
+                    .Select(t => new UserServiceModel
+                    {
+                        Id = t.Tagged.Id,
+                        UserName = t.Tagged.UserName,
+                        FullName = t.Tagged.FullName,
+                        Country = t.Tagged.Country,
+                        DateOfBirth = t.Tagged.DOB
+                    })
                     .ToList()
             })
             .ToListAsync();

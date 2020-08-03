@@ -5,18 +5,6 @@
 
     public class CommentViewModel
     {
-        public CommentViewModel()
-        {
-        }
-
-        public CommentViewModel(CommentServiceModel comment)
-        {
-            this.CommentId = comment.CommentId;
-            this.Content = comment.Content;
-            this.DatePosted = comment.DatePosted;
-            this.Author = comment.Author;
-            this.PostId = comment.PostId;
-        }
         public int CommentId { get; set; }
 
         public string Content { get; set; }

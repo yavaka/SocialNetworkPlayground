@@ -1,11 +1,8 @@
-﻿using SocialMedia.Services.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace SocialMedia.Web.Models
+﻿namespace SocialMedia.Web.Models
 {
+    using SocialMedia.Services.Models;
+    using System.Collections.Generic;
+
     public class GroupViewModel
     {
         public GroupViewModel()
@@ -21,8 +18,8 @@ namespace SocialMedia.Web.Models
         public string Description { get; set; }
 
         public UserServiceModel Admin { get; set; }
-        
-        public string CurrentUserId{ get; set; }
+
+        public string CurrentUserId { get; set; }
 
         public bool IsCurrentUserMember { get; set; }
 
