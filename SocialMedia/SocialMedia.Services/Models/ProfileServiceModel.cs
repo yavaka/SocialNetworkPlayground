@@ -29,6 +29,9 @@
             }
         }
 
-        public string Message { get; set; }
+        /// <summary>
+        /// Depending of the enum value it will be generated different layout
+        /// </summary>
+        public ServiceModelFRStatus FriendshipStatus{ get; set; }
     }
 }

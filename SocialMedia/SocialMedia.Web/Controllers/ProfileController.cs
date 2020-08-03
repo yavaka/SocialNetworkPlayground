@@ -22,7 +22,7 @@
         [HttpGet]
         public async Task<IActionResult> IndexAsync(
             string userId, 
-            string friendshipStatus)
+            ServiceModelFRStatus friendshipStatus)
         {
             var currentUserId = this._userService
                 .GetUserId(User);
@@ -32,20 +32,14 @@
             if (userId != null)
             {
                 profile = await this._profileService.GetProfileAsync(userId);
-
-                if (friendshipStatus == null)
-                {
-                    return RedirectToAction("FriendshipStatus", "Friendships", new { userId = userId });
-                }
-
-                //Depending on the friendship status it will be generated different layout.
-                profile.Message = friendshipStatus;
             }
             else //Gets the current user`s profile
             {
                 profile = await this._profileService.GetProfileAsync(currentUserId);
             }
-
+            
+            profile.FriendshipStatus = friendshipStatus;
+            
             profile.CurrentUserId = currentUserId;
 
             return View(profile);

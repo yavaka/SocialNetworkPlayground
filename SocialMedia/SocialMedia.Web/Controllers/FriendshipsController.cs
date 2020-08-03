@@ -44,7 +44,7 @@
         }
 
         [HttpGet]
-        public async Task<IActionResult> FriendshipStatus(string userId, string invokedFrom)
+        public async Task<IActionResult> FriendshipStatus(string userId, [FromQuery]string invokedFrom)
         {
             if (userId == null)
             {
@@ -56,28 +56,24 @@
 
             if (currentUserId == userId)
             {
-                return RedirectToAction("Index", "Profile");
+                return RedirectToAction("Index", "Profile", 
+                    new { friendshipStatus = ServiceModelFRStatus.CurrentUser});
             }
 
             var friendshipStatus = await this._friendshipService
                 .GetFriendshipStatusAsync(currentUserId, userId);
 
-            var status = string.Empty;
-
-            switch (friendshipStatus)
+            //Check is it invoked from pendings or requests collections
+            if (invokedFrom != null &&
+                friendshipStatus == ServiceModelFRStatus.Pending)
             {
-                case -1:
-                    status = "-1";
-                    break;
-                case 0:
-                    status = $"{friendshipStatus} {invokedFrom}";
-                    break;
-                case 1:
-                    status = friendshipStatus.ToString();
-                    break;
+                if (invokedFrom == "Requests")
+                {
+                    friendshipStatus = ServiceModelFRStatus.Request;
+                }
             }
 
-            return RedirectToAction("Index", "Profile", new { userId = userId, friendshipStatus = status });
+            return RedirectToAction("Index", "Profile", new { userId = userId, friendshipStatus = friendshipStatus });
         }
 
         public async Task<IActionResult> FriendRequests()

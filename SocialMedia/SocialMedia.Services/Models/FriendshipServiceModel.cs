@@ -8,9 +8,7 @@
 
         public UserServiceModel Requester { get; set; }
 
-        //0 = Pending
-        //1 = Accepted
-        public int Status { get; set; }
+        public ServiceModelFRStatus Status{ get; set; }
 
         /// <summary>
         /// Users who sent request to the current user
@@ -21,5 +19,14 @@
         /// Current user`s pending requests
         /// </summary>
         public IEnumerable<UserServiceModel> PendingRequests { get; set; }
+    }
+
+    public enum ServiceModelFRStatus 
+    {
+        CurrentUser,
+        NonFriends,
+        Request,
+        Pending,
+        Accepted
     }
 }

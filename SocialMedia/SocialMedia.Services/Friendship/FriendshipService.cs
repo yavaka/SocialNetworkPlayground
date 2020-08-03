@@ -59,8 +59,8 @@
 
         private async Task<IEnumerable<FriendshipServiceModel>> GetFriendshipsByUserIdAsync(string userId)
            => await this._data.Friendships
-                .Where(i => i.AddresseeId == userId && i.Status == 1 ||
-                            i.RequesterId == userId && i.Status == 1)
+                .Where(i => i.AddresseeId == userId && i.Status == Status.Accepted ||
+                            i.RequesterId == userId && i.Status == Status.Accepted)
                 .Select(f => new FriendshipServiceModel
                 {
                     Addressee = new UserServiceModel(f.Addressee),
@@ -68,7 +68,7 @@
                 })
                 .ToListAsync();
 
-        public async Task<int> GetFriendshipStatusAsync(string currentUserId, string userId)
+        public async Task<ServiceModelFRStatus> GetFriendshipStatusAsync(string currentUserId, string userId)
         {
             var friendship = await this._data
                 .Friendships
@@ -78,22 +78,29 @@
 
             if (friendship == null)
             {
-                return -1;
+                return ServiceModelFRStatus.NonFriends;
             }
 
-            return friendship.Status;
+            switch (friendship.Status)
+            {
+                case Status.Accepted:
+                    return ServiceModelFRStatus.Accepted;
+                case Status.Pending:
+                    return ServiceModelFRStatus.Pending;
+            }
+            return ServiceModelFRStatus.Request;
         }
 
         public async Task<IEnumerable<UserServiceModel>> GetFriendRequestsAsync(string currentUserId)
         => await this._data
             .Friendships
-                .Where(a => a.AddresseeId == currentUserId && a.Status == 0)
+                .Where(a => a.AddresseeId == currentUserId && a.Status == Status.Pending)
                 .Select(r => new UserServiceModel(r.Requester))
                 .ToListAsync();
 
         public async Task<IEnumerable<UserServiceModel>> GetPendingRequestsAsync(string currentUserId)
         => await this._data.Friendships
-                .Where(r => r.RequesterId == currentUserId && r.Status == 0)
+                .Where(r => r.RequesterId == currentUserId && r.Status == Status.Pending)
                 .Select(a => new UserServiceModel(a.Addressee))
                 .ToListAsync();
 
@@ -103,7 +110,7 @@
             {
                 AddresseeId = addresseeId,
                 RequesterId = currentUserId,
-                Status = 0
+                Status = Status.Pending
             };
 
             if (await IsFriendshipExistAsync(currentUserId, addresseeId))
@@ -127,9 +134,9 @@
         {
             var friendship = await GetFriendshipAsync(requesterId, currentUserId);
 
-            if (friendship.Status == 0)
+            if (friendship.Status == Status.Pending)
             {
-                friendship.Status = 1;
+                friendship.Status = Status.Accepted;
 
                 await this._data.SaveChangesAsync();
 
