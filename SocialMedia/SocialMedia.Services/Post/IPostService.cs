@@ -7,11 +7,11 @@
 
     public interface IPostService
     {
-        Task<EntityState> AddPost(PostServiceModel serviceModel);
+        Task AddPost(PostServiceModel serviceModel);
 
-        Task<EntityState> EditPost(PostServiceModel serviceModel);
+        Task EditPost(PostServiceModel serviceModel);
         
-        Task<EntityState> DeletePost(int id);
+        Task DeletePost(int id);
 
         Task<PostServiceModel> GetPost(int id);
 

@@ -26,7 +26,7 @@
             this._commentService = commentService;
         }
 
-        public async Task<EntityState> AddPost(PostServiceModel serviceModel)
+        public async Task AddPost(PostServiceModel serviceModel)
         {
             var post = new Post
             {
@@ -47,11 +47,9 @@
 
             await this._data.Posts.AddAsync(post);
             await this._data.SaveChangesAsync();
-
-            return EntityState.Added;
         }
 
-        public async Task<EntityState> EditPost(PostServiceModel serviceModel)
+        public async Task EditPost(PostServiceModel serviceModel)
         {
             var post = await this._data.Posts
                 .FirstOrDefaultAsync(i => i.PostId == serviceModel.PostId);
@@ -60,19 +58,15 @@
 
             this._data.Update(post);
             await this._data.SaveChangesAsync();
-
-            return EntityState.Modified;
         }
 
-        public async Task<EntityState> DeletePost(int id)
+        public async Task DeletePost(int id)
         {
             var post = await this._data.Posts
                 .FirstOrDefaultAsync(i => i.PostId == id);
 
             this._data.Posts.Remove(post);
             await this._data.SaveChangesAsync();
-
-            return EntityState.Deleted;
         }
 
         public async Task<PostServiceModel> GetPost(int id)

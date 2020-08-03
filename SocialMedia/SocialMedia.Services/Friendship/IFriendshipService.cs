@@ -17,14 +17,14 @@
 
         Task<IEnumerable<UserServiceModel>> GetPendingRequestsAsync(string currentUserId);
 
-        Task<EntityState> SendRequestAsync(string currentUserId, string addresseeId);
+        Task SendRequestAsync(string currentUserId, string addresseeId);
 
-        Task<EntityState> AcceptRequestAsync(string currentUserId, string requesterId);
+        Task AcceptRequestAsync(string currentUserId, string requesterId);
 
-        Task<EntityState> RejectRequestAsync(string currentUserId, string requesterId);
+        Task RejectRequestAsync(string currentUserId, string requesterId);
 
-        Task<EntityState> CancelInvitationAsync(string currentUserId, string addresseeId);
+        Task CancelInvitationAsync(string currentUserId, string addresseeId);
 
-        Task<EntityState> UnfriendAsync(string currentUserId, string friendId);
+        Task UnfriendAsync(string currentUserId, string friendId);
     }
 }

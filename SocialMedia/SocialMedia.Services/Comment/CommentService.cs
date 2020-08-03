@@ -22,7 +22,7 @@
             this._taggedUserService = taggedUserService;
         }
 
-        public async Task<EntityState> AddComment(CommentServiceModel serviceModel)
+        public async Task AddComment(CommentServiceModel serviceModel)
         {
             await this._data.Comments.AddAsync(
                 new Comment
@@ -39,11 +39,9 @@
                 });
 
             await this._data.SaveChangesAsync();
-
-            return EntityState.Added;
         }
 
-        public async Task<EntityState> EditComment(CommentServiceModel serviceModel)
+        public async Task EditComment(CommentServiceModel serviceModel)
         {
             var comment = await this._data.Comments
                 .FirstOrDefaultAsync(i =>i.Id == serviceModel.CommentId);
@@ -52,19 +50,15 @@
 
             this._data.Update(comment);
             await this._data.SaveChangesAsync();
-
-            return EntityState.Modified;
         }
 
-        public async Task<EntityState> DeleteComment(int id)
+        public async Task DeleteComment(int id)
         {
             var comment = await this._data.Comments
                 .FirstOrDefaultAsync(i => i.Id == id);
 
             this._data.Remove(comment);
             await this._data.SaveChangesAsync();
-
-            return EntityState.Deleted;
         }
 
         public async Task<CommentServiceModel> GetComment(int id)

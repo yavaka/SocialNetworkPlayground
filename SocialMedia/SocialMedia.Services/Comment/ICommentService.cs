@@ -7,11 +7,11 @@
 
     public interface ICommentService
     {
-        Task<EntityState> AddComment(CommentServiceModel commentServiceModel);
+        Task AddComment(CommentServiceModel commentServiceModel);
 
-        Task<EntityState> EditComment(CommentServiceModel serviceModel);
+        Task EditComment(CommentServiceModel serviceModel);
 
-        Task<EntityState> DeleteComment(int id);
+        Task DeleteComment(int id);
 
         Task<CommentServiceModel> GetComment(int id);
 

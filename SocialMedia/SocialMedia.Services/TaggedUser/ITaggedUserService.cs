@@ -14,21 +14,21 @@
 
         Task<ICollection<UserServiceModel>> GetTaggedFriendsByPostIdAsync(int postId);
 
-        Task<EntityState> TagFriendPost(string taggerId, string taggedId, int postId);
+        Task TagFriendPost(string taggerId, string taggedId, int postId);
 
-        Task<EntityState> TagFriendComment(string taggerId, string taggedId, int commentId);
+        Task TagFriendComment(string taggerId, string taggedId, int commentId);
         
         Task UpdateTaggedFriendsInPostAsync(IList<UserServiceModel> taggedFriends, int postId, string taggerId);
         
         Task UpdateTaggedFriendsInCommentAsync(IList<UserServiceModel> taggedFriends, int commentId, string taggerId);
 
-        Task<EntityState> RemoveTaggedFriendPost(string taggedId, int postId);
+        Task RemoveTaggedFriendPost(string taggedId, int postId);
 
-        Task<EntityState> RemoveTaggedFriendComment(string taggedId, int commentId);
+        Task RemoveTaggedFriendComment(string taggedId, int commentId);
         
-        Task<EntityState> DeleteTaggedFriendsPostId(int postId);
+        Task DeleteTaggedFriendsPostId(int postId);
         
-        Task<EntityState> DeleteTaggedFriendsCommentId(int commentId);
+        Task DeleteTaggedFriendsCommentId(int commentId);
 
         /// <summary>
         ///  Compare tagged with untagged friends

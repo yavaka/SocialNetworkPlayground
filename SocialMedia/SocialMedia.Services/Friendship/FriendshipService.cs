@@ -12,7 +12,7 @@
     {
         private readonly SocialMediaDbContext _data;
 
-        public FriendshipService(SocialMediaDbContext data)=>this._data = data;
+        public FriendshipService(SocialMediaDbContext data) => this._data = data;
 
         public async Task<IList<UserServiceModel>> GetFriendsAsync(string userId)
         {
@@ -104,68 +104,75 @@
                 .Select(a => new UserServiceModel(a.Addressee))
                 .ToListAsync();
 
-        public async Task<EntityState> SendRequestAsync(string currentUserId, string addresseeId)
+        public async Task SendRequestAsync(string currentUserId, string addresseeId)
         {
-            var friendship = new Friendship()
+            if (!await IsFriendshipExistAsync(currentUserId, addresseeId))
             {
-                AddresseeId = addresseeId,
-                RequesterId = currentUserId,
-                Status = Status.Pending
-            };
+                var friendship = new Friendship()
+                {
+                    AddresseeId = addresseeId,
+                    RequesterId = currentUserId,
+                    Status = Status.Pending
+                };
 
-            if (await IsFriendshipExistAsync(currentUserId, addresseeId))
-            {
-                return EntityState.Unchanged;
+                await this._data.Friendships.AddAsync(friendship);
+                await this._data.SaveChangesAsync();
             }
-
-            await this._data.Friendships.AddAsync(friendship);
-            await this._data.SaveChangesAsync();
-
-            return EntityState.Added;
         }
-       
+
         private async Task<bool> IsFriendshipExistAsync(string currentUserId, string addresseeId)
         => await this._data
             .Friendships
                 .AnyAsync(u => u.RequesterId == currentUserId &&
-                            u.AddresseeId == addresseeId);
+                            u.AddresseeId == addresseeId ||
+                            u.RequesterId == addresseeId &&
+                            u.AddresseeId == currentUserId);
 
-        public async Task<EntityState> AcceptRequestAsync(string currentUserId, string requesterId)
+        public async Task AcceptRequestAsync(string currentUserId, string requesterId)
         {
-            var friendship = await GetFriendshipAsync(requesterId, currentUserId);
-
-            if (friendship.Status == Status.Pending)
+            if (await IsFriendshipExistAsync(currentUserId, requesterId))
             {
-                friendship.Status = Status.Accepted;
+                var friendship = await GetFriendshipAsync(requesterId, currentUserId);
 
-                await this._data.SaveChangesAsync();
+                if (friendship.Status == Status.Pending)
+                {
+                    friendship.Status = Status.Accepted;
 
-                return EntityState.Modified;
+                    await this._data.SaveChangesAsync();
+                }
             }
-            return EntityState.Unchanged;
         }
 
-        public async Task<EntityState> RejectRequestAsync(string currentUserId, string requesterId)
+        public async Task RejectRequestAsync(string currentUserId, string requesterId)
         {
-            var friendship = await GetFriendshipAsync(requesterId, currentUserId);
+            if (await IsFriendshipExistAsync(currentUserId, requesterId))
+            {
+                var friendship = await GetFriendshipAsync(requesterId, currentUserId);
 
-            return await RemoveFriendshipAsync(friendship);
+                await RemoveFriendshipAsync(friendship);
+            }
         }
 
-        public async Task<EntityState> CancelInvitationAsync(string currentUserId, string addresseeId)
+        public async Task CancelInvitationAsync(string currentUserId, string addresseeId)
         {
-            var friendship = await GetFriendshipAsync(currentUserId, addresseeId);
+            if (await IsFriendshipExistAsync(currentUserId, addresseeId))
+            {
+                var friendship = await GetFriendshipAsync(currentUserId, addresseeId);
 
-            return await RemoveFriendshipAsync(friendship);
+                await RemoveFriendshipAsync(friendship);
+            }
         }
 
-        public async Task<EntityState> UnfriendAsync(string currentUserId, string friendId)
+        public async Task UnfriendAsync(string currentUserId, string friendId)
         {
-            var friendship = await GetFriendshipAsync(currentUserId, friendId) == null ? 
-                await GetFriendshipAsync(friendId, currentUserId) : 
-                await GetFriendshipAsync(currentUserId, friendId);
+            if (await IsFriendshipExistAsync(currentUserId, friendId))
+            {
+                var friendship = await GetFriendshipAsync(currentUserId, friendId) == null ?
+                    await GetFriendshipAsync(friendId, currentUserId) :
+                    await GetFriendshipAsync(currentUserId, friendId);
 
-            return await RemoveFriendshipAsync(friendship);
+                await RemoveFriendshipAsync(friendship);
+            }
         }
 
         private async Task<Friendship> GetFriendshipAsync(string requesterId, string addresseeId)
@@ -174,17 +181,14 @@
                 .FirstOrDefaultAsync(i => i.RequesterId == requesterId &&
                                         i.AddresseeId == addresseeId);
 
-        private async Task<EntityState> RemoveFriendshipAsync(Friendship friendship) 
+        private async Task RemoveFriendshipAsync(Friendship friendship)
         {
             if (friendship != null)
             {
                 this._data.Friendships.Remove(friendship);
 
                 await this._data.SaveChangesAsync();
-
-                return EntityState.Deleted;
             }
-            return EntityState.Unchanged;
         }
 
     }
