@@ -1,6 +1,7 @@
 ﻿namespace SocialMedia.Web.Models
 {
-    using SocialMedia.Services.Models;
+    using SocialMedia.Services.Post;
+    using SocialMedia.Services.User;
     using System.Collections.Generic;
 
     public class GroupViewModel

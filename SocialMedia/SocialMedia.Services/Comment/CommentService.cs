@@ -3,8 +3,8 @@
     using Microsoft.EntityFrameworkCore;
     using SocialMedia.Data;
     using SocialMedia.Data.Models;
-    using SocialMedia.Services.Models;
     using SocialMedia.Services.TaggedUser;
+    using SocialMedia.Services.User;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -31,11 +31,12 @@
                     DatePosted = serviceModel.DatePosted,
                     AuthorId = serviceModel.Author.Id,
                     CommentedPostId = serviceModel.PostId,
-                    TaggedUsers = this._taggedUserService.GetTagFriendsEntities(
-                    serviceModel.Author.Id,
-                    serviceModel.TaggedFriends
-                        .Select(i => i.Id)
-                        .ToList())
+                    TaggedUsers = this._taggedUserService
+                        .GetTagFriendsInCommentsEntities(
+                            serviceModel.Author.Id,
+                            serviceModel.TaggedFriends
+                                .Select(i => i.Id)
+                                .ToList())
                 });
 
             await this._data.SaveChangesAsync();

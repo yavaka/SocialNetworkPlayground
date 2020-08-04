@@ -1,6 +1,7 @@
 ﻿namespace SocialMedia.Web.Models
 {
-    using SocialMedia.Services.Models;
+    using SocialMedia.Services.TaggedUser;
+    using SocialMedia.Services.User;
     using System;
 
     public class PostViewModel

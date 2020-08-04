@@ -7,24 +7,22 @@
 
     public class Comment
     {
-        public Comment()
-        {
-            this.TaggedUsers = new HashSet<TagFriends>();
-        }
+        public Comment() => this.TaggedUsers = new HashSet<TagFriendInComment>();
 
-        [Key]
         public int Id { get; set; }
-        [Required]
+        
         public string Content { get; set; }
+        
         public DateTime DatePosted { get; set; }
+        
         public string AuthorId { get; set; }
+        
         public virtual User Author { get; set; }
+        
         public int CommentedPostId { get; set; }
+        
         public virtual Post CommentedPost { get; set; }
 
-        public virtual ICollection<TagFriends> TaggedUsers { get; set; }
-
-        [NotMapped]
-        public string Message { get; set; }
+        public virtual ICollection<TagFriendInComment> TaggedUsers { get; set; }
     }
 }

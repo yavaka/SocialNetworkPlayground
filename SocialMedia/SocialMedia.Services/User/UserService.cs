@@ -2,8 +2,6 @@
 {
     using Microsoft.AspNetCore.Identity;
     using SocialMedia.Data.Models;
-    using SocialMedia.Services.Models;
-    using System;
     using System.Security.Claims;
     using System.Threading.Tasks;
 

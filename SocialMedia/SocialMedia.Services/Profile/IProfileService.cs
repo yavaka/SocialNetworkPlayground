@@ -1,8 +1,7 @@
-﻿using SocialMedia.Services.Models;
-using System.Threading.Tasks;
-
-namespace SocialMedia.Services.Profile
+﻿namespace SocialMedia.Services.Profile
 {
+    using System.Threading.Tasks;
+    
     public interface IProfileService
     {
         Task<ProfileServiceModel> GetProfileAsync(string userId);

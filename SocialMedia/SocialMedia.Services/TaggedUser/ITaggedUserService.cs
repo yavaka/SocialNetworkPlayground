@@ -2,32 +2,35 @@
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Microsoft.EntityFrameworkCore;
-    using Models;
     using SocialMedia.Data.Models;
+    using SocialMedia.Services.User;
 
     public interface ITaggedUserService
     {
-        ICollection<TagFriends> GetTagFriendsEntities(
-            string taggerId, 
+        ICollection<TagFriendInPost> GetTagFriendsInPostsEntities(
+            string taggerId,
             IEnumerable<string> taggedFriendsIds);
 
+        ICollection<TagFriendInComment> GetTagFriendsInCommentsEntities(
+            string taggerId,
+            IEnumerable<string> taggedFriendsIds);
+        
         Task<ICollection<UserServiceModel>> GetTaggedFriendsByPostIdAsync(int postId);
 
         Task TagFriendPost(string taggerId, string taggedId, int postId);
 
         Task TagFriendComment(string taggerId, string taggedId, int commentId);
-        
+
         Task UpdateTaggedFriendsInPostAsync(IList<UserServiceModel> taggedFriends, int postId, string taggerId);
-        
+
         Task UpdateTaggedFriendsInCommentAsync(IList<UserServiceModel> taggedFriends, int commentId, string taggerId);
 
         Task RemoveTaggedFriendPost(string taggedId, int postId);
 
         Task RemoveTaggedFriendComment(string taggedId, int commentId);
-        
+
         Task DeleteTaggedFriendsPostId(int postId);
-        
+
         Task DeleteTaggedFriendsCommentId(int commentId);
 
         /// <summary>

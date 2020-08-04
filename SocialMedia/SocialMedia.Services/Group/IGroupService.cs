@@ -1,5 +1,5 @@
 ﻿using SocialMedia.Data.Models;
-using SocialMedia.Services.Models;
+using SocialMedia.Services.User;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

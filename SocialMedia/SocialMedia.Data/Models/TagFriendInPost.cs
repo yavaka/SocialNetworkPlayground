@@ -1,9 +1,13 @@
-﻿namespace SocialMedia.Data.Models
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace SocialMedia.Data.Models
 {
-    public class TagFriends
+    public class TagFriendInPost
     {
         public int Id { get; set; }
-        
+
         /// <summary>
         /// User who tag a friend
         /// </summary>
@@ -16,10 +20,7 @@
         public string TaggedId { get; set; }
         public User Tagged { get; set; }
 
-        public int? PostId { get; set; }
+        public int PostId { get; set; }
         public Post Post { get; set; }
-
-        public int? CommentId { get; set; }
-        public Comment Comment { get; set; }
     }
 }

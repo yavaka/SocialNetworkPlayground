@@ -1,13 +1,12 @@
 ﻿namespace SocialMedia.Services.TaggedUser
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using Data;
     using Microsoft.EntityFrameworkCore;
-    using Models;
     using SocialMedia.Data.Models;
+    using SocialMedia.Services.User;
 
     public class TaggedUserService : ITaggedUserService
     {
@@ -18,14 +17,30 @@
             this._data = data;
         }
 
-        public ICollection<TagFriends> GetTagFriendsEntities(
+        public ICollection<TagFriendInPost> GetTagFriendsInPostsEntities(
             string taggerId,
             IEnumerable<string> taggedFriendsIds)
         {
-            var entities = new List<TagFriends>();
+            var entities = new List<TagFriendInPost>();
             foreach (var taggedId in taggedFriendsIds)
             {
-                entities.Add(new TagFriends
+                entities.Add(new TagFriendInPost
+                {
+                    TaggerId = taggerId,
+                    TaggedId = taggedId
+                });
+            }
+            return entities;
+        }
+
+        public ICollection<TagFriendInComment> GetTagFriendsInCommentsEntities(
+            string taggerId,
+            IEnumerable<string> taggedFriendsIds)
+        {
+            var entities = new List<TagFriendInComment>();
+            foreach (var taggedId in taggedFriendsIds)
+            {
+                entities.Add(new TagFriendInComment
                 {
                     TaggerId = taggerId,
                     TaggedId = taggedId
@@ -36,7 +51,7 @@
 
         public async Task<ICollection<UserServiceModel>> GetTaggedFriendsByPostIdAsync(int postId)
         => await this._data
-              .TagFriends
+              .TagFriendsInPosts
               .Where(i => i.PostId == postId)
               .Select(u => new UserServiceModel
               {
@@ -48,7 +63,7 @@
 
         public async Task TagFriendPost(string taggerId, string taggedId, int postId)
         {
-            await this._data.AddAsync(new TagFriends
+            await this._data.AddAsync(new TagFriendInPost
             {
                 TaggerId = taggerId,
                 TaggedId = taggedId,
@@ -60,7 +75,7 @@
 
         public async Task TagFriendComment(string taggerId, string taggedId, int commentId)
         {
-            await this._data.AddAsync(new TagFriends
+            await this._data.AddAsync(new TagFriendInComment
             {
                 TaggerId = taggerId,
                 TaggedId = taggedId,
@@ -72,40 +87,40 @@
 
         public async Task RemoveTaggedFriendPost(string taggedId, int postId)
         {
-            var entity = await this._data.TagFriends
+            var entity = await this._data.TagFriendsInPosts
                 .FirstOrDefaultAsync(u => u.TaggedId == taggedId &&
                                          u.PostId == postId);
 
-            this._data.TagFriends.Remove(entity);
+            this._data.TagFriendsInPosts.Remove(entity);
             await this._data.SaveChangesAsync();
         }
 
         public async Task RemoveTaggedFriendComment(string taggedId, int commentId)
         {
-            var entity = await this._data.TagFriends
+            var entity = await this._data.TagFriendsInComments
                 .FirstOrDefaultAsync(u => u.TaggedId == taggedId &&
                                         u.CommentId == commentId);
-            this._data.TagFriends.Remove(entity);
+            this._data.TagFriendsInComments.Remove(entity);
             await this._data.SaveChangesAsync();
         }
 
         public async Task DeleteTaggedFriendsPostId(int postId)
         {
-            var entities = await this._data.TagFriends
+            var entities = await this._data.TagFriendsInPosts
                  .Where(p => p.PostId == postId)
                  .ToListAsync();
 
-            this._data.TagFriends.RemoveRange(entities);
+            this._data.TagFriendsInPosts.RemoveRange(entities);
             await this._data.SaveChangesAsync();
         }
 
         public async Task DeleteTaggedFriendsCommentId(int commentId)
         {
-            var entities = await this._data.TagFriends
+            var entities = await this._data.TagFriendsInComments
                  .Where(c => c.CommentId == commentId)
                  .ToListAsync();
 
-            this._data.TagFriends.RemoveRange(entities);
+            this._data.TagFriendsInComments.RemoveRange(entities);
             await this._data.SaveChangesAsync();
         }
 
@@ -135,14 +150,14 @@
 
         public async Task DeleteTaggedFriendsInComments(ICollection<int> commentsIds)
         {
-            var entities = await this._data.TagFriends
+            var entities = await this._data.TagFriendsInComments
                 .Where(i => commentsIds
                         .Contains((int)i.CommentId))
                 .ToListAsync();
 
             if (entities.Count > 0)
             {
-                this._data.TagFriends.RemoveRange(entities);
+                this._data.TagFriendsInComments.RemoveRange(entities);
                 await this._data.SaveChangesAsync();
             }
         }
@@ -153,7 +168,7 @@
             string taggerId)
         {
             //Get tag friends entities
-            var tagFriendsEntities = await this._data.TagFriends
+            var tagFriendsEntities = await this._data.TagFriendsInPosts
                 .Where(t => t.PostId == postId &&
                         t.TaggerId == taggerId)
                 .ToListAsync();
@@ -192,7 +207,7 @@
         
         {
             //Get tag friends entities
-            var tagFriendsEntities = await this._data.TagFriends
+            var tagFriendsEntities = await this._data.TagFriendsInComments
                 .Where(t => t.CommentId == commentId &&
                         t.TaggerId == taggerId)
                 .ToListAsync();

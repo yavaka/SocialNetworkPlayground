@@ -2,11 +2,11 @@
 {
     using Microsoft.EntityFrameworkCore;
     using SocialMedia.Data;
-    using SocialMedia.Services.Models;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using SocialMedia.Data.Models;
+    using SocialMedia.Services.User;
 
     public class GroupService : IGroupService
     {

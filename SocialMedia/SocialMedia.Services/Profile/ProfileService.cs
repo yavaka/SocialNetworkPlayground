@@ -1,6 +1,5 @@
 ﻿namespace SocialMedia.Services.Profile
 {
-    using SocialMedia.Services.Models;
     using SocialMedia.Services.Post;
     using SocialMedia.Services.User;
     using System.Threading.Tasks;

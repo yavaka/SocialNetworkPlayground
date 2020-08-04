@@ -1,7 +1,5 @@
 ﻿namespace SocialMedia.Services.Post
 {
-    using Microsoft.EntityFrameworkCore;
-    using SocialMedia.Services.Models;
     using System.Collections.Generic;
     using System.Threading.Tasks;
 

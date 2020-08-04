@@ -4,8 +4,9 @@
     using SocialMedia.Data;
     using SocialMedia.Data.Models;
     using SocialMedia.Services.Comment;
-    using SocialMedia.Services.Models;
+    using SocialMedia.Services.Group;
     using SocialMedia.Services.TaggedUser;
+    using SocialMedia.Services.User;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -33,7 +34,7 @@
                 Content = serviceModel.Content,
                 DatePosted = serviceModel.DatePosted,
                 AuthorId = serviceModel.Author.Id,
-                TaggedUsers = this._taggedUserService.GetTagFriendsEntities(
+                TaggedUsers = this._taggedUserService.GetTagFriendsInPostsEntities(
                     serviceModel.Author.Id,
                     serviceModel.TaggedFriends
                         .Select(i => i.Id)

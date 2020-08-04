@@ -1,5 +1,6 @@
-﻿namespace SocialMedia.Services.Models
+﻿namespace SocialMedia.Services.Group
 {
+    using SocialMedia.Services.User;
     using System.Collections.Generic;
 
     public class GroupServiceModel

@@ -1,5 +1,6 @@
-﻿namespace SocialMedia.Services.Models
+﻿namespace SocialMedia.Services.Friendship
 {
+    using SocialMedia.Services.User;
     using System.Collections.Generic;
     
     public class FriendshipServiceModel

@@ -1,7 +1,10 @@
-﻿namespace SocialMedia.Services.Models
+﻿namespace SocialMedia.Services.Profile
 {
+    using SocialMedia.Services.User;
+    using SocialMedia.Services.Post;
     using System.Collections.Generic;
     using System.Linq;
+    using SocialMedia.Services.Friendship;
 
     public class ProfileServiceModel
     {

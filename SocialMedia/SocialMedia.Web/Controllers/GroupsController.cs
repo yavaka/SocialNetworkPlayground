@@ -2,15 +2,16 @@
 {
     using System.Linq;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using SocialMedia.Services.Comment;
     using SocialMedia.Services.Group;
-    using SocialMedia.Services.Models;
     using SocialMedia.Services.Post;
     using SocialMedia.Services.TaggedUser;
     using SocialMedia.Services.User;
     using SocialMedia.Web.Models;
 
+    [Authorize]
     public class GroupsController : Controller
     {
         private readonly IUserService _userService;

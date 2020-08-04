@@ -4,17 +4,16 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
-    using SocialMedia.Data.Models;
     using SocialMedia.Web.Models;
-    using SocialMedia.Services.Models;
-    using SocialMedia.Web.Infrastructure;
     using SocialMedia.Services.Friendship;
     using SocialMedia.Services.Comment;
     using SocialMedia.Services.TaggedUser;
     using SocialMedia.Services.User;
     using System.Linq;
     using SocialMedia.Services.Url;
+    using Microsoft.AspNetCore.Authorization;
 
+    [Authorize]
     public class CommentsController : Controller
     {
         private readonly IFriendshipService _friendshipService;

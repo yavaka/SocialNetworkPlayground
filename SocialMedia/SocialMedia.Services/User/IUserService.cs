@@ -1,6 +1,5 @@
 ﻿namespace SocialMedia.Services.User
 {
-    using SocialMedia.Services.Models;
     using System.Threading.Tasks;
     using System.Security.Claims;
 

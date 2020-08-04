@@ -1,11 +1,12 @@
 ﻿namespace SocialMedia.Web.Controllers
 {
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using SocialMedia.Services.Friendship;
-    using SocialMedia.Services.Models;
     using SocialMedia.Services.User;
 
+    [Authorize]
     public class FriendshipsController : Controller
     {
         private readonly IFriendshipService _friendshipService;

@@ -19,9 +19,13 @@
         }
 
         public string FirstName { get; set; }
+        
         public string LastName { get; set; }
+        
         public string FullName => $"{this.FirstName} {this.LastName}";
+        
         public string City { get; set; }
+        
         public string Country { get; set; }
 
         [DisplayFormat(DataFormatString = "{0:dd'/'MM'/'yyyy}", ApplyFormatInEditMode = true)]
@@ -30,31 +34,26 @@
 
         [EnumDataType(typeof(Gender))]
         public Gender Gender { get; set; }
+        
         [DataType(DataType.MultilineText)]
         public string Bio { get; set; }
         public string Locale { get; set; } = "en-GB";
 
         public virtual ICollection<Post> Posts { get; set; }
+        
         public virtual ICollection<Comment> Comments { get; set; }
+        
         public virtual ICollection<Friendship> FriendshipAddressee { get; set; }
+        
         public virtual ICollection<Friendship> FriendshipRequester { get; set; }
+        
         public virtual ICollection<UserInGroup> Groups { get; set; }
 
-        /// <summary>
-        /// User who tag a friend
-        /// </summary>
-        public virtual ICollection<TagFriends> Tagger { get; set; }
-        /// <summary>
-        /// User who is tagged by some of its friends
-        /// </summary>
-        public virtual ICollection<TagFriends> Tagged { get; set; }
+        public virtual ICollection<TagFriendInPost> TaggerInPosts { get; set; }
+        public virtual ICollection<TagFriendInPost> TaggedInPosts { get; set; }
 
-
-        //TODO: Gallery
-
-        [NotMapped]
-        public string Message { get; set; }
-
+        public virtual ICollection<TagFriendInComment> TaggerInComments { get; set; }
+        public virtual ICollection<TagFriendInComment> TaggedInComments { get; set; }
     }
 
     public enum Gender

@@ -4,7 +4,6 @@
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
     using SocialMedia.Services.Friendship;
-    using SocialMedia.Services.Models;
     using SocialMedia.Web.Models;
     using SocialMedia.Services.Post;
     using System;
@@ -13,7 +12,9 @@
     using System.Linq;
     using SocialMedia.Services.User;
     using SocialMedia.Services.Url;
+    using Microsoft.AspNetCore.Authorization;
 
+    [Authorize]
     public class PostsController : Controller
     {
         private readonly IFriendshipService _friendshipService;

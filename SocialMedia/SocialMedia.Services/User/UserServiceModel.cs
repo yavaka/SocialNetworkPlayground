@@ -1,6 +1,5 @@
-﻿namespace SocialMedia.Services.Models
+﻿namespace SocialMedia.Services.User
 {
-    using SocialMedia.Data.Models;
     using System;
 
     public class UserServiceModel

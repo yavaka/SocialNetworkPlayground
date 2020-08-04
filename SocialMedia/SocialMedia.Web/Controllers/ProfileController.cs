@@ -2,10 +2,12 @@
 {
     using Microsoft.AspNetCore.Mvc;
     using System.Threading.Tasks;
-    using SocialMedia.Services.Models;
     using SocialMedia.Services.Profile;
     using SocialMedia.Services.User;
+    using SocialMedia.Services.Friendship;
+    using Microsoft.AspNetCore.Authorization;
 
+    [Authorize]
     public class ProfileController : Controller
     {
         private readonly IProfileService _profileService;

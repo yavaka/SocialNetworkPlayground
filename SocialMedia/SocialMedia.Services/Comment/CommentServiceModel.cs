@@ -1,5 +1,6 @@
-﻿namespace SocialMedia.Services.Models
+﻿namespace SocialMedia.Services.Comment
 {
+    using SocialMedia.Services.User;
     using System;
     using System.Collections.Generic;
 
