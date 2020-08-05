@@ -1,9 +1,10 @@
 ﻿namespace SocialMedia.Services.Comment
 {
+    using SocialMedia.Services.Common;
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
-    public interface ICommentService
+    public interface ICommentService : IService
     {
         Task AddComment(CommentServiceModel commentServiceModel);
 

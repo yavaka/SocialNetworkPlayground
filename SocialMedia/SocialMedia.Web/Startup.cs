@@ -41,14 +41,7 @@ namespace SocialMedia.Web
 
             services.AddScoped<IUserClaimsPrincipalFactory<User>, CustomUserClaimsPrincipalFactory>();
 
-            services.AddTransient<ITaggedUserService, TaggedUserService>();
-            services.AddTransient<IPostService, PostService>();
-            services.AddTransient<IFriendshipService, FriendshipService>();
-            services.AddTransient<IProfileService, ProfileService>();
-            services.AddTransient<ICommentService, CommentService>();
-            services.AddTransient<IUserService, UserService>();
-            services.AddTransient<IGroupService, GroupService>();
-            services.AddTransient<IUrlService, UrlService>();
+            services.AddConventionalServices();
 
             // Cookies for Login
             services

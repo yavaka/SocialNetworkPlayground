@@ -1,9 +1,10 @@
 ﻿namespace SocialMedia.Services.Post
 {
+    using SocialMedia.Services.Common;
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
-    public interface IPostService
+    public interface IPostService : IService
     {
         Task AddPost(PostServiceModel serviceModel);
 

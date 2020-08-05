@@ -2,8 +2,9 @@
 {
     using System.Threading.Tasks;
     using System.Security.Claims;
+    using SocialMedia.Services.Common;
 
-    public interface IUserService
+    public interface IUserService : IService
     {
         Task<UserServiceModel> GetUserByIdAsync(string userId);
 

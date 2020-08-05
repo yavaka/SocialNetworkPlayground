@@ -3,9 +3,10 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using SocialMedia.Data.Models;
+    using SocialMedia.Services.Common;
     using SocialMedia.Services.User;
 
-    public interface ITaggedUserService
+    public interface ITaggedUserService : IService
     {
         ICollection<TagFriendInPost> GetTagFriendsInPostsEntities(
             string taggerId,

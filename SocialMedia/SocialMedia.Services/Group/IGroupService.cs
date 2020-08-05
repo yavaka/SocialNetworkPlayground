@@ -1,11 +1,11 @@
-﻿using SocialMedia.Data.Models;
-using SocialMedia.Services.User;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace SocialMedia.Services.Group
+﻿namespace SocialMedia.Services.Group
 {
-    public interface IGroupService
+    using SocialMedia.Services.Common;
+    using SocialMedia.Services.User;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+
+    public interface IGroupService : IService
     {
         Task<ICollection<GroupServiceModel>> GetNonMemberGroupsAsync(UserServiceModel currentUser);
 

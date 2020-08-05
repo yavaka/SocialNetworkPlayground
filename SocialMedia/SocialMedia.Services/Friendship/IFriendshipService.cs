@@ -1,10 +1,11 @@
 ﻿namespace SocialMedia.Services.Friendship
 {
+    using SocialMedia.Services.Common;
     using SocialMedia.Services.User;
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
-    public interface IFriendshipService
+    public interface IFriendshipService : IService
     {
         Task<IList<UserServiceModel>> GetFriendsAsync(string userId);
 
