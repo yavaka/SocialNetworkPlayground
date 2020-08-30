@@ -19,6 +19,8 @@ namespace SocialMedia.Web
     using SocialMedia.Services.User;
     using SocialMedia.Services.Group;
     using SocialMedia.Services.Url;
+    using SocialMedia.Services.Image;
+    using SocialMedia.Services.Stream;
 
     public class Startup
     {

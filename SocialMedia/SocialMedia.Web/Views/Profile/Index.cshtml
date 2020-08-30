@@ -15,7 +15,14 @@
     <div class="jumbotron">
         <div class="row">
             <div class="col-md-3">
-                <img src="~/img/profile_pic.png" class="rounded" alt="Cinque Terre" width="150" height="150">
+                @if (Model.AvatarUrl != null)
+                {
+                    <img src="@Model.AvatarUrl" class="rounded" alt="Cinque Terre" width="150" height="150">
+                }
+                else
+                {
+                    <img src="~/img/profile_pic.png" class="rounded" alt="Cinque Terre" width="150" height="150">
+                }
             </div>
             <div class="col-md-7">
                 <table class="table">
@@ -69,10 +76,19 @@ Model.FriendshipStatus == ServiceModelFRStatus.Accepted)
                 <button class="nav-link btn btn-outline-primary" href="#"><img src="https://img.icons8.com/ultraviolet/40/000000/small-icons.png" />  Gallery </button>
             </li>
             <li class="nav-item col-md-3">
-                <button class="nav-link btn btn-outline-primary" href="#"><img src="https://img.icons8.com/ultraviolet/40/000000/handshake.png" />  Friends </button>
+                <button class="nav-link btn btn-outline-primary dropdown-toggle" data-toggle="dropdown" role="menu" aria-expanded="false" style="cursor:pointer"><img src="https://img.icons8.com/ultraviolet/40/000000/handshake.png" />  Friends </button>
+                <ul class="dropdown-menu">
+                    <li><a class="nav-link text-dark" asp-controller="Friendships" asp-action="Friends">Friends</a></li>
+                    <li><a class="nav-link text-dark" asp-controller="Friendships" asp-action="FriendRequests">Requests</a></li>
+                    <li><a class="nav-link text-dark" asp-area="" asp-controller="Friendships" asp-action="NonFriends">Non friends</a></li>
+                </ul>
             </li>
             <li class="nav-item col-md-3">
-                <button class="nav-link btn btn-outline-primary" href="#"><img src="https://img.icons8.com/ultraviolet/40/000000/groups.png" />  Groups </button>
+                <button class="nav-link btn btn-outline-primary dropdown-toggle" data-toggle="dropdown" role="menu" aria-expanded="false" style="cursor:pointer"><img src="https://img.icons8.com/ultraviolet/40/000000/groups.png" />  Groups </button>
+                <ul class="dropdown-menu">
+                    <li><a class="nav-link text-dark" asp-area="" asp-controller="Groups" asp-action="JoinedGroups">My Groups</a></li>
+                    <li><a class="nav-link text-dark" asp-area="" asp-controller="Groups" asp-action="NonMemberGroups">All Groups</a></li>
+                </ul>
             </li>
         </ul>
     }
@@ -178,7 +194,7 @@ Model.FriendshipStatus == ServiceModelFRStatus.Accepted)
                                         <li>
                                             @Html.ActionLink(
                              "Delete", "Delete", "Posts",
-                             new 
+                             new
                              {
                                  id = post.PostId,
                                  path = $"Profile/Index/{ Model.User.Id }"
