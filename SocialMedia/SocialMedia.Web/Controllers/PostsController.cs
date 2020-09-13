@@ -78,11 +78,15 @@
                     .GetCurrentUserAsync(User);
 
                 //Get tagged friends
-                if (viewModel.TagFriends.Friends.Any(c => c.Checked == true))
+                if (viewModel.TagFriends.Friends.Any(c => c.Checked))
                 {
                     viewModel.TagFriends.TaggedFriends = viewModel.TagFriends.Friends
-                        .Where(c => c.Checked == true)
+                        .Where(c => c.Checked)
                         .ToList();
+                }
+                else
+                {
+                    viewModel.TagFriends.TaggedFriends = new List<UserServiceModel>();
                 }
 
                 await this._postService
@@ -97,9 +101,7 @@
 
                 if (TempData.ContainsKey("path"))
                 {
-                    var returnUrl = this._urlService
-                        .GenerateReturnUrl(TempData["path"].ToString(), HttpContext);
-                    return Redirect(returnUrl);
+                    return LocalRedirect(TempData["path"].ToString());
                 }
                 else
                 {

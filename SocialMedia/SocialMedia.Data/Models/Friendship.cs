@@ -15,7 +15,7 @@
 
     public enum Status
     {
-        Pending,
-        Accepted
+        Pending = 0,
+        Accepted = 1
     }
 }

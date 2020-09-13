@@ -49,7 +49,8 @@ namespace SocialMedia.Web.Areas.Identity.Pages.Account.Manage
                 return Page();
             }
 
-            var user = await _userManager.GetUserAsync(User);
+            var user = await _userManager
+                .GetUserAsync(User);
 
             if (user == null)
             {
@@ -59,10 +60,14 @@ namespace SocialMedia.Web.Areas.Identity.Pages.Account.Manage
             //Deletes the avatar if there is so
             await this._imageService.DeleteAvatar(user.Id);
 
-            var file = Request.Form.Files.First();
-
+            var file = Request.Form.Files.FirstOrDefault();
+            if (file == null)
+            {
+                return NotFound();
+            }
+            
             var memoryStream = await this._streamService
-                .CopyFileToMemroyStreamAsync(file);
+                .CopyFileToMemoryStreamAsync(file);
 
             await this._imageService.AddImage(new ImageServiceModel()
             {

@@ -42,6 +42,8 @@
         public virtual ICollection<TagFriendInComment> TaggerInComments { get; set; }
         public virtual ICollection<TagFriendInComment> TaggedInComments { get; set; }
         public virtual ICollection<Image> Images { get; set; }
+        //public int AvatarId { get; set; }
+        //public Image Avatar { get; set; }
     }
 
     public enum Gender
