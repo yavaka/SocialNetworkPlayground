@@ -2,11 +2,11 @@
 {
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using SocialMedia.Data.Models;
     using SocialMedia.Services.Image;
     using SocialMedia.Services.Stream;
     using SocialMedia.Services.User;
-    using System.Collections.Generic;
-    using System.Linq;
+    using SocialMedia.Web.Models;
     using System.Threading.Tasks;
 
     public class GalleryController : Controller
@@ -35,8 +35,8 @@
                 return NotFound();
             }
 
-            var images = await this._imageService
-                .GetAllImagesByUserIdAsync(userId);
+            var images = this._imageService
+                .GetAllImagesByUserId(userId);
 
             return View(images);
         }
@@ -49,17 +49,17 @@
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddImage(string _)
+        public async Task<IActionResult> AddImage(IFormCollection uploadedFiles)
         {
             var userId = this._userService
                 .GetUserId(User);
 
-            var images = Request.Form.Files;
+            var images = uploadedFiles.Files;
 
             if (images == null)
             {
                 return RedirectToAction(
-                    nameof(IndexAsync), 
+                    nameof(IndexAsync),
                     new { userId = userId });
             }
 
@@ -68,24 +68,46 @@
                 var memoryStream = await this._streamService
                     .CopyFileToMemoryStreamAsync(image);
 
-                await this._imageService.AddImage(new ImageServiceModel()
+                await this._imageService.AddImageAsync(new ImageServiceModel()
                 {
                     ImageTitle = image.FileName,
                     ImageData = memoryStream.ToArray(),
-                    UploaderId = userId,
-                    IsAvatar = false
+                    UploaderId = userId
                 });
             }
 
             return RedirectToAction(
-                "Index", 
+                "Index",
                 new { userId = userId });
         }
 
-        //[HttpGet]
-        //public IActionResult DeleteImage(int imageId) 
-        //{
+        [HttpGet]
+        public async Task<IActionResult> DeleteImageAsync(int imageId)
+        {
+            if (!await this._imageService.IsImageExistAsync(imageId))
+            {
+                return NotFound($"Image cannot be found!");
+            }
+            return View(new ImageViewModel
+            {
+                ImageId = imageId,
+                Base64Image = await this._imageService
+                    .GetImageByIdAsync(imageId)
+            });
+        }
 
-        //}
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int imageId)
+        {
+            var userId = this._userService
+                .GetUserId(User);
+
+            await this._imageService.DeleteImageAsync(imageId);
+
+            return RedirectToAction(
+                "Index",
+                new { userId = userId });
+        }
     }
 }

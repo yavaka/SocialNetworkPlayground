@@ -1,5 +1,6 @@
 namespace SocialMedia.Web.Areas.Identity.Pages.Account.Manage
 {
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -27,12 +28,12 @@ namespace SocialMedia.Web.Areas.Identity.Pages.Account.Manage
 
         public string StatusMessage { get; set; }
 
-        public ActionResult OnGet()
+        public async Task<ActionResult> OnGetAsync()
         {
             var userId = this._userManager.GetUserId(User);
 
-            var avatar = this._imageService
-                .GetAvatar(userId);
+            var avatar = await this._imageService
+                .GetAvatarAsync(userId);
 
             if (avatar != null)
             {
@@ -42,7 +43,7 @@ namespace SocialMedia.Web.Areas.Identity.Pages.Account.Manage
             return Page();
         }
 
-        public async Task<ActionResult> OnPostAsync()
+        public async Task<ActionResult> OnPostAsync(IFormFile file)
         {
             if (!ModelState.IsValid)
             {
@@ -51,16 +52,15 @@ namespace SocialMedia.Web.Areas.Identity.Pages.Account.Manage
 
             var user = await _userManager
                 .GetUserAsync(User);
-
+             
             if (user == null)
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
             //Deletes the avatar if there is so
-            await this._imageService.DeleteAvatar(user.Id);
+            await this._imageService.DeleteAvatarAsync(user.Id);
 
-            var file = Request.Form.Files.FirstOrDefault();
             if (file == null)
             {
                 return NotFound();
@@ -69,12 +69,10 @@ namespace SocialMedia.Web.Areas.Identity.Pages.Account.Manage
             var memoryStream = await this._streamService
                 .CopyFileToMemoryStreamAsync(file);
 
-            await this._imageService.AddImage(new ImageServiceModel()
+            await this._imageService.AddAvatarAsync(new AvatarServiceModel
             {
-                ImageTitle = file.FileName,
-                ImageData = memoryStream.ToArray(),
+                AvatarData = memoryStream.ToArray(),
                 UploaderId = user.Id,
-                IsAvatar = true
             });
 
             this.StatusMessage = "Profile picture has been set successfully.";

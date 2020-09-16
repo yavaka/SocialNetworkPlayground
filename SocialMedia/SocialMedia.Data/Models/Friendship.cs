@@ -8,9 +8,9 @@
 
         public Status Status { get; set; }
 
-        public virtual User Addressee { get; set; }
+        public User Addressee { get; set; }
 
-        public virtual User Requester { get; set; }
+        public User Requester { get; set; }
     }
 
     public enum Status

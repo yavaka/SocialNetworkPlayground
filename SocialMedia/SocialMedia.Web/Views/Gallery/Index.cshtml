@@ -1,4 +1,4 @@
-﻿@model IEnumerable<string>
+﻿@model IEnumerable<KeyValuePair<int, string>>
 
 @{
     ViewData["Title"] = "Gallery";
@@ -18,11 +18,18 @@
 
 <div class="container page-top">
     <div class="row">
-        @foreach (var image in Model)
+        @if (Model != null)
         {
-            <div class="col-lg-3 col-md-4 col-xs-6 thumb">
-                    <img src="@image" class="zoom img-fluid " alt="">
-            </div>
+            @foreach (var (id, image) in Model)
+            {
+                <div class="col-lg-3 col-md-4 col-xs-6 thumb">
+                    <a asp-controller="Gallery"
+                       asp-action="DeleteImage"
+                       asp-route-imageId="@id">
+                        <img src="@image" class="zoom img-fluid " alt="">
+                    </a>
+                </div>
+            }
         }
     </div>
 </div>
