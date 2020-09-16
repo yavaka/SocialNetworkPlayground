@@ -217,7 +217,7 @@ Model.FriendshipStatus == ServiceModelFriendshipStatus.Accepted)
                              new
                              {
                                  id = post.PostId,
-                                 path = $"Profile/Index/{ Model.User.Id }"
+                                 path = $"/Profile/Index/{ Model.User.Id }"
                              },
                              new { @class = "btn" })
                                         </li>
@@ -227,7 +227,7 @@ Model.FriendshipStatus == ServiceModelFriendshipStatus.Accepted)
                              new
                              {
                                  id = post.PostId,
-                                 path = $"Profile/Index/{ Model.User.Id }"
+                                 path = $"/Profile/Index/{ Model.User.Id }"
                              },
                              new { @class = "btn" })
                                         </li>
@@ -255,7 +255,7 @@ Model.FriendshipStatus == ServiceModelFriendshipStatus.Accepted)
                          new
                          {
                              postId = post.PostId,
-                             path = $"Profile/Index/{ Model.User.Id }"
+                             path = $"/Profile/Index/{ Model.User.Id }"
                          },
                          new { @class = "btn btn-outline-primary" })
 
@@ -297,7 +297,7 @@ Model.FriendshipStatus == ServiceModelFriendshipStatus.Accepted)
                                                  new
                                                  {
                                                      id = comment.CommentId,
-                                                     path = $"Profile/Index/{ Model.User.Id}"
+                                                     path = $"/Profile/Index/{ Model.User.Id}"
                                                  },
                                                  new { @class = "btn" })
                                                             </li>
@@ -307,7 +307,7 @@ Model.FriendshipStatus == ServiceModelFriendshipStatus.Accepted)
                                                  new
                                                  {
                                                      id = comment.CommentId,
-                                                     path = $"Profile/Index/{ Model.User.Id}"
+                                                     path = $"/Profile/Index/{ Model.User.Id}"
                                                  },
                                                  new { @class = "btn" })
                                                             </li>
@@ -324,7 +324,6 @@ Model.FriendshipStatus == ServiceModelFriendshipStatus.Accepted)
                         }
                     </div>
                 </div>
-
             }
         }
     </div>
