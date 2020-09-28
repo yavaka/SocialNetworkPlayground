@@ -1,0 +1,213 @@
+﻿<style>
+    .dropbtn {
+        background-color: #4CAF50;
+        color: white;
+        padding: 16px;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+    }
+
+        .dropbtn:hover, .dropbtn:focus {
+            background-color: #3e8e41;
+        }
+
+    #myInput {
+        box-sizing: border-box;
+        background-image: url('searchicon.png');
+        background-position: 14px 12px;
+        background-repeat: no-repeat;
+        font-size: 16px;
+        padding: 14px 20px 12px 45px;
+        border: none;
+        border-bottom: 1px solid #ddd;
+    }
+
+        #myInput:focus {
+            outline: 3px solid #ddd;
+        }
+
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f6f6f6;
+        min-width: 230px;
+        overflow: auto;
+        border: 1px solid #ddd;
+        z-index: 1;
+    }
+
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+    .dropdown a:hover {
+        background-color: #ddd;
+    }
+
+    .show {
+        display: block;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+
+            <input id="userInput" type="text" name="tagUser" />
+
+            <div id="searchDropdown" class="dropdown-content">
+                <input id="searchInput" type="text" placeholder="Search for user" onkeyup="filterInput()">
+            </div>
+        </div>
+        <div class="col-md-4"></div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+
+        var inputValue;
+        var anchorTagTextValue;
+        var users;
+        var taggedUsers;
+
+        //Get user input
+        $("#userInput").on("input", function () {
+
+            inputValue = $(this).val();
+
+            //Check for the last char of user input
+            if (inputValue.charAt(inputValue.length - 1) == '@@') {
+                showDropDownList();
+            }
+        })
+
+        //Catch every press of delete and backspace buttons
+        $("#userInput").on("keydown", function (e) {
+            //get the pressed key code or char code
+            var key = e.keyCode || e.charCode;
+
+            //if pressed key is delete or backspace 
+            if (key == 8 || key == 46) {
+                //Get input tag text value
+                $("#userInput").on("input", function () {
+                    inputValue = $(this).val();
+                })
+
+                if (inputValue != "" &&
+                    inputValue != " " &&
+                    inputValue != null &&
+                    inputValue != undefined) {
+
+                    var inputValueAsArray = inputValue.split(" ");
+
+                    var lastWord = inputValueAsArray[inputValueAsArray.length - 1];
+
+                    if (lastWord[0] == '@@') {
+                        inputValue = inputValue.replace(lastWord, "");
+                        $("#userInput").val(inputValue);
+                    }
+                }
+            }
+        });
+
+        //Hide dropdown on click outside
+        $(document).on("click", function (event) {
+            var $trigger = $("#searchDropdown");
+            if ($trigger !== event.target && !$trigger.has(event.target).length) {
+                $("#searchDropdown").slideUp("fast");
+            }
+        });
+
+        // hide the menu when anchor tag is clicked and invoke setClickedATagToInputField
+        function hideDropdown(userFirstName) {
+            $("#searchDropdown").hide();
+
+            removeTaggedUser(userFirstName);
+
+            anchorTagTextValue = userFirstName;
+            setClickedATagValueToInputField();
+        }
+
+        function removeTaggedUser(userFirstName) {
+
+            let searchDropdown = document.getElementById("searchDropdown");
+
+            let usersATags = searchDropdown.childNodes;
+
+            for (var i = 0; i < usersATags.length; i++) {
+
+                if (usersATags[i].textContent == userFirstName) {
+                    searchDropdown.removeChild(usersATags[i]);
+
+                    break;
+                }
+            }
+        }
+
+        function setClickedATagValueToInputField() {
+
+            var oldInput = $('#userInput').val();
+
+            var newInput = oldInput.concat(anchorTagTextValue);
+
+            $('#userInput').val(newInput);
+        }
+
+        function showDropDownList() {
+
+            $("#searchDropdown").toggle();
+
+            usersAsJson = getMostRecentUsers();
+        }
+
+        function filterInput() {
+            var input, filter, a, i;
+            input = document.getElementById("searchInput");
+            filter = input.value.toUpperCase();
+            div = document.getElementById("searchDropdown");
+            a = div.getElementsByTagName("a");
+            for (i = 0; i < a.length; i++) {
+                txtValue = a[i].textContent || a[i].innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    a[i].style.display = "";
+                } else {
+                    a[i].style.display = "none";
+                }
+            }
+        }
+
+        //return most recent users as json
+        function getMostRecentUsers() {
+            if (users == null) {
+                $.ajax({
+                    type: "GET",
+                    url: "/MockUser/GetMostRecentUsers/",
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "text",
+                    async: false,
+                    success: function (data) {
+                        users = JSON.parse(data);
+
+                        for (var i = 0; i < users.length; i++) {
+
+                            let anchorTag = "<a onclick=\"hideDropdown($(this).text())\" style=\"cursor: pointer\">" + users[i].FirstName + "</a>";
+                            $("#searchDropdown").append(anchorTag);
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+}
