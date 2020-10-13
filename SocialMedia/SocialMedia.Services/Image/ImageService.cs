@@ -17,12 +17,14 @@
         public async Task AddImageAsync(ImageServiceModel serviceModel)
         {
             if (serviceModel == null)
+            {
                 throw new ArgumentException("Image cannot be null");
+            }
 
             var img = new Image
             {
                 ImageTitle = serviceModel.ImageTitle,
-                ImageData = serviceModel.ImageData,
+                OriginalImageData = serviceModel.ImageData,
                 UploaderId = serviceModel.UploaderId
             };
 
@@ -85,7 +87,7 @@
                     images.Add(
                         new KeyValuePair<int, string>(
                             image.Id,
-                            GetImageDataUrl(image.ImageData)));
+                            GetImageDataUrl(image.OriginalImageData)));
                 }
                 return images;
             }
@@ -108,7 +110,7 @@
             var imageEntity = await this._data.Images
                 .FirstOrDefaultAsync(i => i.Id == imageId);
 
-            return this.GetImageDataUrl(imageEntity.ImageData);
+            return this.GetImageDataUrl(imageEntity.OriginalImageData);
         }
 
         private ICollection<Image> GetAllImagesEntitiesByUserId(string userId)
