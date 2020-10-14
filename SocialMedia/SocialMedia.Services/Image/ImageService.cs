@@ -7,7 +7,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-
+    
     public class ImageService : IImageService
     {
         private readonly SocialMediaDbContext _data;
@@ -24,7 +24,9 @@
             var img = new Image
             {
                 ImageTitle = serviceModel.ImageTitle,
-                OriginalImageData = serviceModel.ImageData,
+                OriginalImageData = serviceModel.OriginalImageData,
+                ThumbnailImageData = serviceModel.ThumbnailImageData,
+                MediumImageDate = serviceModel.MediumImageData,
                 UploaderId = serviceModel.UploaderId
             };
 
@@ -74,7 +76,7 @@
         => await this._data.ProfilePictures
             .FirstOrDefaultAsync(u => u.UploaderId == userId);
 
-        public IEnumerable<KeyValuePair<int,string>> GetAllImagesByUserId(string userId)
+        public IEnumerable<KeyValuePair<int,string>> GetAllThumbnailImagesByUserId(string userId)
         {
             var imageEntities = GetAllImagesEntitiesByUserId(userId);
 
@@ -87,7 +89,7 @@
                     images.Add(
                         new KeyValuePair<int, string>(
                             image.Id,
-                            GetImageDataUrl(image.OriginalImageData)));
+                            GetImageDataUrl(image.ThumbnailImageData)));
                 }
                 return images;
             }

@@ -3,33 +3,172 @@
 @{
     ViewData["Title"] = "Gallery";
 }
-<div class="row">
-    <div class="col-md-4">
-        <h1>Gallery</h1>
-    </div>
-    <div class="col-md-4" style="padding: 15px 32px">
-        <a asp-controller="Gallery"
-           asp-action="AddImage"
-           class="btn btn-primary">Add Image</a>
+<style>
+    /* Style the Image Used to Trigger the Modal */
+    #myImg {
+        border-radius: 5px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+        #myImg:hover {
+            opacity: 0.7;
+        }
+
+    /* The Modal (background) */
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        padding-top: 100px; /* Location of the box */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+    }
+
+    /* Modal Content (Image) */
+    .modal-content {
+        margin: auto;
+        display: block;
+        width: 80%;
+        max-width: 700px;
+    }
+
+    /* Add Animation - Zoom in the Modal */
+    .modal-content, #caption {
+        animation-name: zoom;
+        animation-duration: 0.6s;
+    }
+
+    @@keyframes zoom {
+        from {
+            transform: scale(0)
+        }
+
+        to {
+            transform: scale(1)
+        }
+    }
+
+    /* The Close Button */
+    .close {
+        position: absolute;
+        top: 15px;
+        right: 35px;
+        color: #f1f1f1;
+        font-size: 40px;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+        .close:hover,
+        .close:focus {
+            color: #bbb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+    /* 100% Image Width on Smaller Screens */
+    @@media only screen and (max-width: 700px) {
+        .modal-content {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-4">
+            <h1>Gallery</h1>
+        </div>
+        <div class="col-md-4">
+        </div>
+        <div class="col-md-4">
+            <a asp-action="AddImage"
+               asp-controller="Gallery"
+               class="btn btn-primary">Add Image</a>
+        </div>
     </div>
 </div>
 
-<hr class="container" style="height: 1px; border-width: 0; color: skyblue; background-color: skyblue">
+<hr style="width: 5px" />
 
-<div class="container page-top">
+<div class="container-fluid">
     <div class="row">
         @if (Model != null)
         {
-            @foreach (var (id, image) in Model)
+            @foreach (var image in Model)
             {
-                <div class="col-lg-3 col-md-4 col-xs-6 thumb">
-                    <a asp-controller="Gallery"
-                       asp-action="DeleteImage"
-                       asp-route-imageId="@id">
-                        <img src="@image" class="zoom img-fluid " alt="">
-                    </a>
+                <div class="col-sm-12 col-md-6" id="imageDiv" align="center">
+                    <img onclick="loadImage('@image.Key')"
+                         src="@image.Value"
+                         style="margin-bottom: 3px; cursor:pointer" />
                 </div>
             }
         }
     </div>
 </div>
+
+<!-- The Modal -->
+<div id="myModal" class="modal">
+
+    <!-- The Close Button -->
+    <span onclick="closeModal()" class="close">&times;</span>
+
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+        function loadImage(id) {
+
+            removeLastImageElementInMyModal();
+
+            result = $.ajax({
+                type: "GET",
+                url: "/Gallery/GetImage/",
+                data: { id: id },
+                dataType: 'json',
+                async: false,
+                success: function (data) {
+                }
+            }).responseText;
+
+            var image = JSON.parse(result);
+            var img = document.createElement('img');
+            img.src = image.base64Image;
+            img.className = 'modal-content responsive';
+            $('#myModal').append(img);
+            showModal();
+        }
+
+        function showModal() {
+            document.getElementById("myModal").style.display = "block";
+        }
+
+        function closeModal() {
+            document.getElementById("myModal").style.display = "none";
+        }
+
+        function removeLastImageElementInMyModal() {
+
+            var numOfImgElements = document
+                .getElementById("myModal")
+                .getElementsByTagName("IMG")
+                .length;
+
+            if (numOfImgElements > 0) {
+                var div = document.getElementById('myModal');
+                div.lastChild.remove();
+                //var img = document
+                //    .getElementById("myModal")
+                //    .getElementsByTagName("IMG");
+                //img.remove;
+            }
+        }
+    </script>
+}

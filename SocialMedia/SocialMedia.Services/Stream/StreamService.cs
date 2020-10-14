@@ -8,11 +8,10 @@
     {
         public async Task<MemoryStream> CopyFileToMemoryStreamAsync(IFormFile file)
         {
-            using (var ms = new MemoryStream())
-            {
-                await file.CopyToAsync(ms);
-                return ms;
-            }
+            using var ms = new MemoryStream();
+            
+            await file.CopyToAsync(ms);
+            return ms;
         }
     }
 }

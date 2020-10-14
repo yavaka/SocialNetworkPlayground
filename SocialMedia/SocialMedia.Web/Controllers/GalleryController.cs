@@ -2,27 +2,31 @@
 {
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using SocialMedia.Data.Models;
     using SocialMedia.Services.Image;
+    using SocialMedia.Services.ImageSharp;
     using SocialMedia.Services.Stream;
     using SocialMedia.Services.User;
     using SocialMedia.Web.Models;
     using System.Threading.Tasks;
+    using static Services.Common.Constants;
 
     public class GalleryController : Controller
     {
         private readonly IImageService _imageService;
         private readonly IStreamService _streamService;
         private readonly IUserService _userService;
+        private readonly IImageSharpService _imageSharpService;
 
         public GalleryController(
             IImageService imageService,
             IStreamService streamService,
-            IUserService userService)
+            IUserService userService,
+            IImageSharpService imageSharpService)
         {
             this._imageService = imageService;
             this._streamService = streamService;
             this._userService = userService;
+            this._imageSharpService = imageSharpService;
         }
 
         public async Task<IActionResult> IndexAsync(string userId)
@@ -36,7 +40,7 @@
             }
 
             var images = this._imageService
-                .GetAllImagesByUserId(userId);
+                .GetAllThumbnailImagesByUserId(userId);
 
             return View(images);
         }
@@ -49,33 +53,46 @@
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddImage(IFormCollection uploadedFiles)
+        public async Task<IActionResult> AddImage(IFormFileCollection files)
         {
+            // If there is no uploaded images will return the view 
+            if (files.Count == 0)
+            {
+                TempData["filesError"] = "There is no uploaded images";
+                return View();
+            }
+
             var userId = await this._userService
                 .GetUserIdByNameAsync(User.Identity.Name);
 
-            var images = uploadedFiles.Files;
-
-            if (images == null)
+            foreach (var file in files)
             {
-                return RedirectToAction(
-                    nameof(IndexAsync),
-                    new { userId = userId });
-            }
-
-            foreach (var image in images)
-            {
-                var memoryStream = await this._streamService
-                    .CopyFileToMemoryStreamAsync(image);
-
-                await this._imageService.AddImageAsync(new ImageServiceModel()
+                if (file.Length > MAX_FILE_SIZE)
                 {
-                    ImageTitle = image.FileName,
-                    ImageData = memoryStream.ToArray(),
-                    UploaderId = userId
-                });
-            }
+                    TempData["filesError"] = "Image size cannot be more than 10MB!";
+                }
 
+                var memoryStream = await this._streamService
+                    .CopyFileToMemoryStreamAsync(file);
+
+                var imageServiceModel = new ImageServiceModel
+                {
+                    ImageTitle = file.FileName,
+                    OriginalImageData = memoryStream.ToArray(),
+                    UploaderId = userId
+                };
+
+                // Get current image to thumbnail size
+                imageServiceModel.ThumbnailImageData = await this._imageSharpService
+                    .ResizeTumbnailImageAsync(file);
+
+                // Get current image to medium size
+                imageServiceModel.MediumImageData = await this._imageSharpService
+                    .ResizeMediumImageAsync(file);
+
+                await this._imageService.AddImageAsync(imageServiceModel);
+            }
+            
             return RedirectToAction(
                 "Index",
                 new { userId = userId });
