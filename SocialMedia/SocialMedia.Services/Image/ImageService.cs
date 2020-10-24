@@ -112,7 +112,7 @@
             var imageEntity = await this._data.Images
                 .FirstOrDefaultAsync(i => i.Id == imageId);
 
-            return this.GetImageDataUrl(imageEntity.OriginalImageData);
+            return this.GetImageDataUrl(imageEntity.MediumImageDate);
         }
 
         private ICollection<Image> GetAllImagesEntitiesByUserId(string userId)

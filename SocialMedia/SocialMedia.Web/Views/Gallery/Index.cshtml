@@ -124,26 +124,24 @@
 @section Scripts
 {
     <script type="text/javascript">
+
         function loadImage(id) {
 
             removeLastImageElementInMyModal();
 
-            result = $.ajax({
+            $.ajax({
                 type: "GET",
                 url: "/Gallery/GetImage/",
                 data: { id: id },
                 dataType: 'json',
-                async: false,
                 success: function (data) {
+                    var img = document.createElement('img');
+                    img.src = data.base64Image;
+                    img.className = 'modal-content responsive';
+                    $('#myModal').append(img);
+                    showModal();
                 }
-            }).responseText;
-
-            var image = JSON.parse(result);
-            var img = document.createElement('img');
-            img.src = image.base64Image;
-            img.className = 'modal-content responsive';
-            $('#myModal').append(img);
-            showModal();
+            });
         }
 
         function showModal() {
@@ -164,10 +162,6 @@
             if (numOfImgElements > 0) {
                 var div = document.getElementById('myModal');
                 div.lastChild.remove();
-                //var img = document
-                //    .getElementById("myModal")
-                //    .getElementsByTagName("IMG");
-                //img.remove;
             }
         }
     </script>

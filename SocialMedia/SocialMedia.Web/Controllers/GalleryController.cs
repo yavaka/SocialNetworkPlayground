@@ -46,6 +46,17 @@
         }
 
         [HttpGet]
+        public async Task<JsonResult> GetImage([FromQuery] int id)
+        {
+            var result = await this._imageService
+                .GetImageByIdAsync(id);
+
+            var base64Image = result;
+
+            return Json(new { base64Image });
+        }
+
+        [HttpGet]
         public IActionResult AddImage()
         {
             return View();
@@ -126,5 +137,6 @@
                 "Index",
                 new { userId = userId });
         }
+
     }
 }
