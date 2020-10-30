@@ -79,8 +79,9 @@
 
         var inputValue;
         var anchorTagTextValue;
-        var users;
-        var taggedUsers;
+        // users from get request as a JSON
+        var untaggedUsers;
+        var taggedUsers = new Array(); // explain that
 
         //Get user input
         $("#userInput").on("input", function () {
@@ -95,28 +96,32 @@
 
         //Catch every press of delete and backspace buttons
         $("#userInput").on("keydown", function (e) {
-            //get the pressed key code or char code
-            var key = e.keyCode || e.charCode;
 
-            //if pressed key is delete or backspace 
-            if (key == 8 || key == 46) {
-                //Get input tag text value
-                $("#userInput").on("input", function () {
-                    inputValue = $(this).val();
-                })
+            // if there are tagged users get into the body
+            if (taggedUsers.length > 0) {
 
-                if (inputValue != "" &&
-                    inputValue != " " &&
-                    inputValue != null &&
-                    inputValue != undefined) {
+                //get the pressed key code or char code
+                var key = e.keyCode || e.charCode;
 
-                    var inputValueAsArray = inputValue.split(" ");
+                //if pressed key is delete or backspace
+                if (key == 8 || key == 46) {
+                    //Get input tag text value
+                    $("#userInput").on("input", function () {
+                        inputValue = $(this).val();
+                    })
 
-                    var lastWord = inputValueAsArray[inputValueAsArray.length - 1];
+                    if (inputValue != "" &&
+                        inputValue != " " &&
+                        inputValue != null &&
+                        inputValue != undefined) {
 
-                    if (lastWord[0] == '@@') {
-                        inputValue = inputValue.replace(lastWord, "");
-                        $("#userInput").val(inputValue);
+                        // get the whole word where the caret is
+                        var word = getWord();
+
+                        if (word[0] == '@@') {
+                            inputValue = inputValue.replace(word, "");
+                            $("#userInput").val(inputValue);
+                        }
                     }
                 }
             }
@@ -131,25 +136,36 @@
         });
 
         // hide the menu when anchor tag is clicked and invoke setClickedATagToInputField
-        function hideDropdown(userFirstName) {
+        function hideDropdown(userId) {
             $("#searchDropdown").hide();
 
-            removeTaggedUser(userFirstName);
+            let user = getUserById(userId);
+
+            removeTaggedUserFromDropDown(user.FirstName);
+
+            taggedUsers.push(user);
 
             anchorTagTextValue = userFirstName;
             setClickedATagValueToInputField();
         }
 
-        function removeTaggedUser(userFirstName) {
+        function showDropDownList() {
+
+            $("#searchDropdown").toggle();
+
+            getMostRecentUsers();
+        }
+
+        function removeTaggedUserFromDropDown(userFirstName) {
 
             let searchDropdown = document.getElementById("searchDropdown");
 
-            let usersATags = searchDropdown.childNodes;
+            let usersAnchorTags = searchDropdown.childNodes;
 
-            for (var i = 0; i < usersATags.length; i++) {
+            for (var i = 0; i < usersAnchorTags.length; i++) {
 
-                if (usersATags[i].textContent == userFirstName) {
-                    searchDropdown.removeChild(usersATags[i]);
+                if (usersAnchorTags[i].textContent == userFirstName) {
+                    searchDropdown.removeChild(usersAnchorTags[i]);
 
                     break;
                 }
@@ -163,13 +179,6 @@
             var newInput = oldInput.concat(anchorTagTextValue);
 
             $('#userInput').val(newInput);
-        }
-
-        function showDropDownList() {
-
-            $("#searchDropdown").toggle();
-
-            usersAsJson = getMostRecentUsers();
         }
 
         function filterInput() {
@@ -190,7 +199,7 @@
 
         //return most recent users as json
         function getMostRecentUsers() {
-            if (users == null) {
+            if (untaggedUsers == null) {
                 $.ajax({
                     type: "GET",
                     url: "/MockUser/GetMostRecentUsers/",
@@ -198,16 +207,63 @@
                     dataType: "text",
                     async: false,
                     success: function (data) {
-                        users = JSON.parse(data);
+                        untaggedUsers = data;
 
-                        for (var i = 0; i < users.length; i++) {
+                        
 
-                            let anchorTag = "<a onclick=\"hideDropdown($(this).text())\" style=\"cursor: pointer\">" + users[i].FirstName + "</a>";
+                        for (var i = 0; i < untaggedUsers.length; i++) {
+                            let anchorTag = "<a onclick=\"hideDropdown(" + untaggedUsers[i].Id + ")\" style=\"cursor: pointer\">" + untaggedUsers[i].FirstName + "</a>";
                             $("#searchDropdown").append(anchorTag);
                         }
                     }
                 });
             }
         }
+
+        // get caret/cursor position
+        function getCaret(node) {
+            if (node.selectionStart) {
+                return node.selectionStart;
+            } else if (!document.selection) {
+                return 0;
+            }
+
+            var c = "\001",
+                sel = document.selection.createRange(),
+                dul = sel.duplicate(),
+                len = 0;
+
+            dul.moveToElementText(node);
+            sel.text = c;
+            len = dul.text.indexOf(c);
+            sel.moveStart('character', -1);
+            sel.text = "";
+            return len;
+        }
+
+        // get the word where is the cursor position in the input field
+        function getWord() {
+
+            var el = document.getElementById('userInput');
+            var carret = getCaret(el);
+            var words = el.value.split(' ');
+            var x = 0;
+
+            for (var i = 0; i < words.length; i++) {
+                x += words[i].length + 1;
+                if (x > carret) { return words[i]; }
+            }
+        }
+
+        function getUserById(userId) {
+            for (var i = 0; i < untaggedUsers.length; i++) {
+                let user = JSON.parse(untaggedUsers[i]);
+                if (user.Id == userId) {
+                    return user;
+                }
+            }
+            return null;
+        }
+
     </script>
 }

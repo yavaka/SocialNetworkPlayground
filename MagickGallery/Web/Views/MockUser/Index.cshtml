@@ -1,8 +1,13 @@
 ﻿@model IEnumerable<Web.Models.MockUser>
 
-<p>
-    <a asp-action="FindUser">Find User</a>
-</p>
+<div class="row">
+    <div class="col-md-6">
+        <a asp-action="FindUser">Find User</a>
+    </div>
+    <div class="col-md-6">
+        <a asp-action="AddUser">Add User</a>
+    </div>
+</div>
 <table class="table">
     <thead>
         <tr>
