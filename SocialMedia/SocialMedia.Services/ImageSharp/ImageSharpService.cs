@@ -1,15 +1,15 @@
 ﻿namespace SocialMedia.Services.ImageSharp
 {
-    using System.IO;
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
     using SixLabors.ImageSharp;
-    using SixLabors.ImageSharp.Formats;
     using SixLabors.ImageSharp.Processing;
+    using System.IO;
+    using System.Threading.Tasks;
     using static SocialMedia.Services.Common.Constants;
 
     public class ImageSharpService : IImageSharpService
     {
+        
         public async Task<byte[]> ResizeTumbnailImageAsync(IFormFile file)
         {
             using var inputMS = new MemoryStream();

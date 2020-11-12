@@ -7,6 +7,10 @@
     using SocialMedia.Services.Stream;
     using SocialMedia.Services.User;
     using SocialMedia.Web.Models;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Net;
     using System.Threading.Tasks;
     using static Services.Common.Constants;
 
@@ -41,7 +45,7 @@
 
             var images = this._imageService
                 .GetAllThumbnailImagesByUserId(userId);
-
+           
             return View(images);
         }
 
