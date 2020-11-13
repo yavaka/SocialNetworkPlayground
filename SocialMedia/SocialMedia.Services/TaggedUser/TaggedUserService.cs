@@ -136,18 +136,6 @@
             return friends;
         }
 
-        private int GetTaggedFriendIndex(List<UserServiceModel> usersCollection, string taggedId)
-        {
-            for (int i = 0; i < usersCollection.Count; i++)
-            {
-                if (usersCollection[i].Id == taggedId)
-                {
-                    return i;
-                }
-            }
-            return -1;
-        }
-
         public async Task DeleteTaggedFriendsInComments(ICollection<int> commentsIds)
         {
             var entities = await this._data.TagFriendsInComments
@@ -237,6 +225,19 @@
                     await TagFriendComment(taggerId, tagged.Id, commentId);
                 }
             }
+        }
+
+
+        private int GetTaggedFriendIndex(List<UserServiceModel> usersCollection, string taggedId)
+        {
+            for (int i = 0; i < usersCollection.Count; i++)
+            {
+                if (usersCollection[i].Id == taggedId)
+                {
+                    return i;
+                }
+            }
+            return -1;
         }
     }
 }

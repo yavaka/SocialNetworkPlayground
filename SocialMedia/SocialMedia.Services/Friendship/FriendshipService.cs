@@ -64,31 +64,6 @@
             return nonFriends;
         }
 
-        private async Task<IEnumerable<FriendshipServiceModel>> GetFriendshipsByUserIdAsync(string userId)
-           => await this._data.Friendships
-                .Where(i => i.AddresseeId == userId && i.Status == Status.Accepted ||
-                            i.RequesterId == userId && i.Status == Status.Accepted)
-                .Select(f => new FriendshipServiceModel
-                {
-                    Addressee = new UserServiceModel 
-                    {
-                        Id = f.Addressee.Id,
-                        UserName = f.Addressee.UserName,
-                        FullName = f.Addressee.FullName,
-                        Country = f.Addressee.Country,
-                        DateOfBirth = f.Addressee.DOB
-                    },
-                    Requester = new UserServiceModel 
-                    {
-                        Id = f.Requester.Id,
-                        UserName = f.Requester.UserName,
-                        FullName = f.Requester.FullName,
-                        Country = f.Requester.Country,
-                        DateOfBirth = f.Requester.DOB
-                    }
-                })
-                .ToListAsync();
-
         public async Task<ServiceModelFriendshipStatus> GetFriendshipStatusAsync(string currentUserId, string userId)
         {
             var friendship = await this._data
@@ -155,14 +130,6 @@
             }
         }
 
-        private async Task<bool> IsFriendshipExistAsync(string currentUserId, string addresseeId)
-        => await this._data
-            .Friendships
-                .AnyAsync(u => u.RequesterId == currentUserId &&
-                            u.AddresseeId == addresseeId ||
-                            u.RequesterId == addresseeId &&
-                            u.AddresseeId == currentUserId);
-
         public async Task AcceptRequestAsync(string currentUserId, string requesterId)
         {
             if (await IsFriendshipExistAsync(currentUserId, requesterId))
@@ -210,6 +177,48 @@
             }
         }
 
+        public async Task<IEnumerable<UserServiceModel>> GetFriendsByPartNameAsync(string partName, string userId) 
+        {
+            var userFriends = await GetFriendsAsync(userId);
+
+            return userFriends
+                .Where(f => f.FullName.StartsWith(partName))
+                .ToList();
+        }
+        
+        private async Task<IEnumerable<FriendshipServiceModel>> GetFriendshipsByUserIdAsync(string userId)
+           => await this._data.Friendships
+                .Where(i => i.AddresseeId == userId && i.Status == Status.Accepted ||
+                            i.RequesterId == userId && i.Status == Status.Accepted)
+                .Select(f => new FriendshipServiceModel
+                {
+                    Addressee = new UserServiceModel 
+                    {
+                        Id = f.Addressee.Id,
+                        UserName = f.Addressee.UserName,
+                        FullName = f.Addressee.FullName,
+                        Country = f.Addressee.Country,
+                        DateOfBirth = f.Addressee.DOB
+                    },
+                    Requester = new UserServiceModel 
+                    {
+                        Id = f.Requester.Id,
+                        UserName = f.Requester.UserName,
+                        FullName = f.Requester.FullName,
+                        Country = f.Requester.Country,
+                        DateOfBirth = f.Requester.DOB
+                    }
+                })
+                .ToListAsync();
+
+        private async Task<bool> IsFriendshipExistAsync(string currentUserId, string addresseeId)
+        => await this._data
+            .Friendships
+                .AnyAsync(u => u.RequesterId == currentUserId &&
+                            u.AddresseeId == addresseeId ||
+                            u.RequesterId == addresseeId &&
+                            u.AddresseeId == currentUserId);
+
         private async Task<Friendship> GetFriendshipAsync(string requesterId, string addresseeId)
         => await this._data
             .Friendships
@@ -225,6 +234,5 @@
                 await this._data.SaveChangesAsync();
             }
         }
-
     }
 }

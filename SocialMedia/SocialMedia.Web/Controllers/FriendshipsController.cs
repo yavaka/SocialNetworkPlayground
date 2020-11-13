@@ -1,5 +1,6 @@
 ﻿namespace SocialMedia.Web.Controllers
 {
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
@@ -19,6 +20,17 @@
         {
             this._friendshipService = friendshipService;
             this._userService = userService;
+        }
+
+        public async Task<JsonResult> GetUserFriendsByPartName(string partName)
+        {
+            var currentUserId = await this._userService
+                .GetUserIdByNameAsync(User.Identity.Name);
+            
+            var friends = await this._friendshipService
+                .GetFriendsByPartNameAsync(partName, currentUserId);
+
+            return new JsonResult(friends.ToList());
         }
 
         public async Task<IActionResult> UserFriends(string userId)

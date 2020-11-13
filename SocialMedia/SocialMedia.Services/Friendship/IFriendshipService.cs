@@ -26,5 +26,7 @@
         Task CancelInvitationAsync(string currentUserId, string addresseeId);
 
         Task UnfriendAsync(string currentUserId, string friendId);
+
+        Task<IEnumerable<UserServiceModel>> GetFriendsByPartNameAsync(string partName, string userId);
     }
 }
