@@ -1,0 +1,8 @@
+﻿@model int[]
+
+<h1>All images</h1>
+
+@foreach (var imageId in Model)
+{
+    <img src="/Images/Details/@imageId" alt="Some cute cat" />
+}

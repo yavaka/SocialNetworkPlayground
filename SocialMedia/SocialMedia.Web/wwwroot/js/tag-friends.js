@@ -57,7 +57,7 @@ function getUsersByPartName() {
     if (searchInput.length >= 3) {
         $.ajax({
             type: "GET",
-            url: "@Url.Action("GetUsersByPartName")",
+            url: '/Friendships/GetFriendsByPartName',
             data: { 'partName': searchInput },
             contentType: "application/json",
             dataType: "json",
@@ -78,7 +78,7 @@ function getUserById(userId) {
 
     $.ajax({
         type: "GET",
-        url: "@Url.Action("GetUserById")",
+        url: "/Friendships/GetFriendsById",
         data: { 'id': userId },
         contentType: "application/json",
         dataType: "json",
