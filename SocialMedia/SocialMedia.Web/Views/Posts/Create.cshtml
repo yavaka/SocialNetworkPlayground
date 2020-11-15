@@ -15,6 +15,7 @@
             <div class="form-group">
                 <input asp-for="@Model.Content" autocomplete="off" id="userInput" class="form-control" />
                 <input type="hidden" asp-for="@Model.GroupId" value="@Model.GroupId" />
+                <input type="hidden" asp-for="@Model.TaggedFriends" value="" id="taggedUsers" />
                 <span asp-validation-for="@Model.Content" class="text-danger"></span>
             </div>
 
@@ -25,33 +26,33 @@
             </div>
 
             @*<div>
-                <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Tag Friends</button>
-                <div class="modal fade" id="myModal" role="dialog">
-                    <div class="modal-dialog modal-sm">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h4 class="modal-title">Friends</h4>
-                            </div>
-                            <div class="modal-body">
-                                <table>
-                                    @for (int i = 0; i < Model.TagFriends.Friends.Count; i++)
-                                    {
-                                        <tr>
-                                            <td>
-                                                @Html.HiddenFor(m => Model.TagFriends.Friends[i].Id)
-                                                @Html.CheckBoxFor(m => Model.TagFriends.Friends[i].Checked)
-                                            </td>
-                                            <td>
-                                                @Html.DisplayFor(m => Model.TagFriends.Friends[i].UserName)
-                                            </td>
-                                        </tr>
-                                    }
-                                </table>
+                    <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Tag Friends</button>
+                    <div class="modal fade" id="myModal" role="dialog">
+                        <div class="modal-dialog modal-sm">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Friends</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <table>
+                                        @for (int i = 0; i < Model.TagFriends.Friends.Count; i++)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @Html.HiddenFor(m => Model.TagFriends.Friends[i].Id)
+                                                    @Html.CheckBoxFor(m => Model.TagFriends.Friends[i].Checked)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(m => Model.TagFriends.Friends[i].UserName)
+                                                </td>
+                                            </tr>
+                                        }
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>*@
+                </div>*@
 
             <br />
             <div class="form-group">
@@ -81,31 +82,25 @@
 
         // Show drop down list
         function showDropDownList() {
-        
+
             $("#searchDropdown").toggle();
-        
+
             //getMostRecentUsers();
         }
-        
+
         // Hide drop down list when one of the anchor tags is clicked
         function hideDropdown(userId) {
-        
+
             removeDropDownResults();
-        
+
             // hide the drop down list
             $("#searchDropdown").hide();
-        
+
             // get the user who will be tagged
-            var user = getUserById(userId);
-        
-            // add the tagged user in collection
-            taggedUsers.push(user);
-            var userIndex = taggedUsers.indexOf(user);
-        
-            // display the tagged user`s first name and index in taggedUsers collection
-            displayTaggedUser(user.firstName + '_' + userIndex + ' ');
+            // done() wait for the ajax response
+            getUserById(userId);
         }
-        
+
         // Hide drop down list on click outside of it
         $(document).on("click", function (event) {
             var $trigger = $("#searchDropdown");
@@ -115,12 +110,12 @@
             document.getElementById('searchInput').value = '';
             removeDropDownResults();
         });
-        
+
         // Get users who consists part name in their names
         function getUsersByPartName() {
             var searchInput = document.getElementById('searchInput').value;
             removeDropDownResults();
-        
+
             if (searchInput.length >= 3) {
                 $.ajax({
                     type: "GET",
@@ -129,68 +124,75 @@
                     contentType: "application/json",
                     dataType: "json",
                     success: function (data) {
-        
+
                         for (var i = 0; i < data.length; i++) {
-                            let anchorTag = "<a onclick=\"hideDropdown(" + data[i].id + ")\" style=\"cursor: pointer\">" + data[i].fullName + "</a>";
+                            let anchorTag = "<a onclick=\"hideDropdown(\'" + data[i].id + "\')\" style=\"cursor: pointer\">" + data[i].fullName + "</a>";
                             $("#results").append(anchorTag);
                         }
                     }
                 });
             }
         }
-        
+
         // Get user by id
-        function getUserById(userId) {
-            var result;
-        
-            $.ajax({
-                type: "GET",
-                url: "@Url.Action("GetUserById")",
-                data: { 'id': userId },
-                contentType: "application/json",
-                dataType: "json",
-                async: false,
-                success: function (data) {
-                    result = data;
+        function getUserById(friendId) {
+            $.post({
+                //type: "POST",
+                url: '/Friendships/GetFriendById',
+                data: {
+                    friendId: friendId
+                },
+                //contentType: "application/json; charset=utf-8",
+                //dataType: "json",
+                success: function (res) {
+
+                    // add the tagged user in collection
+                    taggedUsers.push(res);
+                    var userIndex = taggedUsers.indexOf(res);
+
+                    // display the tagged user`s first name and index in taggedUsers collection
+                    displayTaggedUser(res.fullName.split(' ')[0] + '_' + userIndex + ' ');
+                },
+                error: function (msg) {
+                    console.log(msg);
                 }
             });
-            return result;
         }
-        
+
         // Display the tagged user in the input field
         function displayTaggedUser(firstName) {
-        
+
             var oldInput = $('#userInput').val();
-        
+
             var newInput = oldInput.concat(firstName);
-        
+
             $('#userInput').val(newInput);
         }
-        
+
         // Catch every press of delete and backspace buttons
         $("#userInput").on("keydown", function (e) {
-        
+
             // if there are tagged users get into the body
             if (taggedUsers.length > 0) {
-        
+
                 //get the pressed key code or char code
                 var key = e.keyCode || e.charCode;
-        
+
                 //if pressed key is delete or backspace
                 if (key == 8 || key == 46) {
                     //Get input tag text value
                     $("#userInput").on("input", function () {
                         inputValue = $(this).val();
                     })
-        
+
                     if (inputValue != "" &&
                         inputValue != " " &&
                         inputValue != null &&
                         inputValue != undefined) {
-        
+
                         // get the whole word where the caret is
                         var word = getWord();
-        
+
                         if (word[0] == '@@') {
                             inputValue = inputValue.replace(word, "");
                             $("#userInput").val(inputValue);
@@ -200,7 +202,7 @@
                 }
             }
         });
-        
+
         // Get caret/cursor position
         function getCaret(node) {
             if (node.selectionStart) {
@@ -208,12 +210,12 @@
             } else if (!document.selection) {
                 return 0;
             }
-        
+
             var c = "\001",
                 sel = document.selection.createRange(),
                 dul = sel.duplicate(),
                 len = 0;
-        
+
             dul.moveToElementText(node);
             sel.text = c;
             len = dul.text.indexOf(c);
@@ -221,15 +223,15 @@
             sel.text = "";
             return len;
         }
-        
+
         // Get the word where the cursor position is in the input field
         function getWord() {
-        
+
             var el = document.getElementById('userInput');
             var carret = getCaret(el);
             var words = el.value.split(' ');
             var x = 0;
-        
+
             for (var i = 0; i < words.length; i++) {
                 x += words[i].length + 1;
                 if (x > carret) {
@@ -237,17 +239,17 @@
                 }
             }
         }
-        
+
         function removeDropDownResults() {
-        
+
             var dropDownResults = document.getElementById('results');
             var resultsChildren = dropDownResults.childNodes;
-        
+
             for (var i = 0; i < resultsChildren.length; i++) {
                 dropDownResults.removeChild(resultsChildren[i]);
             }
         }
-        
+
         function assignTaggedUsers() {
             if (taggedUsers.length > 0) {
                 var taggedUsersAsJson = JSON.stringify(taggedUsers);

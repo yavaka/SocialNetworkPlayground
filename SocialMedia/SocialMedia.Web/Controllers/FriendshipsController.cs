@@ -26,11 +26,17 @@
         {
             var currentUserId = await this._userService
                 .GetUserIdByNameAsync(User.Identity.Name);
-            
+
             var friends = await this._friendshipService
                 .GetFriendsByPartNameAsync(partName, currentUserId);
 
             return new JsonResult(friends.ToList());
+        }
+
+        public async Task<JsonResult> GetFriendById(string friendId)
+        {
+            var user = await this._userService.GetUserByIdAsync(friendId);
+            return new JsonResult(user);
         }
 
         public async Task<IActionResult> UserFriends(string userId)
@@ -66,7 +72,7 @@
         }
 
         [HttpGet]
-        public async Task<IActionResult> FriendshipStatus(string userId, [FromQuery]string invokedFrom)
+        public async Task<IActionResult> FriendshipStatus(string userId, [FromQuery] string invokedFrom)
         {
             if (userId == null)
             {

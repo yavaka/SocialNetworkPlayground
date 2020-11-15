@@ -1,5 +1,6 @@
 ﻿namespace SocialMedia.Web.Models
 {
+    using Newtonsoft.Json.Linq;
     using SocialMedia.Services.TaggedUser;
     using SocialMedia.Services.User;
     using System;
@@ -15,6 +16,9 @@
         public UserServiceModel Author { get; set; }
 
         public int? GroupId { get; set; }
+
+        // It comes as a JSON
+        public string TaggedFriends { get; set; }
 
         public TagFriendsServiceModel TagFriends{ get; set; }
     }

@@ -12,6 +12,7 @@
     using System.Linq;
     using SocialMedia.Services.User;
     using Microsoft.AspNetCore.Authorization;
+    using Newtonsoft.Json.Linq;
 
     [Authorize]
     public class PostsController : Controller
@@ -73,16 +74,9 @@
                 var currentUser = await this._userService
                     .GetUserByNameAsync(User.Identity.Name);
 
-                //Get tagged friends
-                if (viewModel.TagFriends.Friends.Any(c => c.Checked))
+                if(viewModel.TaggedFriends != null)
                 {
-                    viewModel.TagFriends.TaggedFriends = viewModel.TagFriends.Friends
-                        .Where(c => c.Checked)
-                        .ToList();
-                }
-                else
-                {
-                    viewModel.TagFriends.TaggedFriends = new List<UserServiceModel>();
+                    //Desirialize into UserServiceModel
                 }
 
                 await this._postService

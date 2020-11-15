@@ -1,6 +1,7 @@
 ﻿namespace SocialMedia.Web.Controllers
 {
     using System.Diagnostics;
+    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http.Extensions;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
@@ -19,11 +20,9 @@
         {
             LoggerInformation(Request.GetDisplayUrl());
             
-            
-
             return View();
         }
-        
+
         public IActionResult Privacy()
         {
             LoggerInformation(Request.GetDisplayUrl());
