@@ -1,12 +1,16 @@
-﻿namespace SocialMedia.Services.Image
+﻿using System;
+
+namespace SocialMedia.Services.Image
 {
     public class ImageServiceModel
     {
-        public int ImageId { get; set; }
-        public string ImageTitle { get; set; }
-        public byte[] OriginalImageData { get; set; }
-        public byte[] ThumbnailImageData { get; set; }
-        public byte[] MediumImageData { get; set; }
-        public string UploaderId { get; set; }
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public byte[] OriginalContent { get; set; }
+        public DateTime UploadDate { get; set; }
+        /// <summary>
+        /// There are 4 groups
+        /// </summary>
+        public int GroupNum { get; set; }
     }
 }

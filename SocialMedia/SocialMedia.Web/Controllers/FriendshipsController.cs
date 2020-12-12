@@ -22,23 +22,6 @@
             this._userService = userService;
         }
 
-        public async Task<JsonResult> GetUserFriendsByPartName(string partName)
-        {
-            var currentUserId = await this._userService
-                .GetUserIdByNameAsync(User.Identity.Name);
-
-            var friends = await this._friendshipService
-                .GetFriendsByPartNameAsync(partName, currentUserId);
-
-            return new JsonResult(friends.ToList());
-        }
-
-        public async Task<JsonResult> GetFriendById(string friendId)
-        {
-            var user = await this._userService.GetUserByIdAsync(friendId);
-            return new JsonResult(user);
-        }
-
         public async Task<IActionResult> UserFriends(string userId)
         {
             var friends = await this._friendshipService
@@ -72,7 +55,7 @@
         }
 
         [HttpGet]
-        public async Task<IActionResult> FriendshipStatus(string userId, [FromQuery] string invokedFrom)
+        public async Task<IActionResult> FriendshipStatus(string userId, [FromQuery]string invokedFrom)
         {
             if (userId == null)
             {
@@ -173,6 +156,25 @@
             await this._friendshipService.UnfriendAsync(currentUserId, friendId);
 
             return RedirectToAction(nameof(Friends));
+        }
+
+        public async Task<JsonResult> GetUserFriendsByPartName(string partName)
+        {
+            var currentUserId = await this._userService
+                .GetUserIdByNameAsync(User.Identity.Name);
+
+            var friends = await this._friendshipService
+                .GetFriendsByPartNameAsync(partName, currentUserId);
+
+            return new JsonResult(friends.ToList());
+        }
+
+        public async Task<JsonResult> GetFriendById(string friendId)
+        {
+            var user = await this._userService
+                .GetUserByIdAsync(friendId);
+            
+            return new JsonResult(user);
         }
     }
 }

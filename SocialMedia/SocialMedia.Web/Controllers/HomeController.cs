@@ -1,7 +1,6 @@
 ﻿namespace SocialMedia.Web.Controllers
 {
     using System.Diagnostics;
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http.Extensions;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
@@ -19,10 +18,12 @@
         public IActionResult Index()
         {
             LoggerInformation(Request.GetDisplayUrl());
-            
+
+            //It is requered becuase the browser cache last records
+            TempData.Clear();
             return View();
         }
-
+        
         public IActionResult Privacy()
         {
             LoggerInformation(Request.GetDisplayUrl());

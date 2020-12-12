@@ -17,6 +17,8 @@
 
         Task<IEnumerable<UserServiceModel>> GetPendingRequestsAsync(string currentUserId);
 
+        Task<IEnumerable<UserServiceModel>> GetFriendsByPartNameAsync(string partName, string userId);
+
         Task SendRequestAsync(string currentUserId, string addresseeId);
 
         Task AcceptRequestAsync(string currentUserId, string requesterId);
@@ -26,7 +28,5 @@
         Task CancelInvitationAsync(string currentUserId, string addresseeId);
 
         Task UnfriendAsync(string currentUserId, string friendId);
-
-        Task<IEnumerable<UserServiceModel>> GetFriendsByPartNameAsync(string partName, string userId);
     }
 }

@@ -1,0 +1,79 @@
+﻿@model ICollection<SocialMedia.Services.Image.ImageServiceModel>
+
+@{
+    ViewData["Title"] = "Gallery";
+}
+
+@section Styles {
+    <link href="@Url.Content("~/css/gallery-style.css")" rel="stylesheet" type="text/css" />
+}
+
+<div class="row">
+    <div class="col-md-4">
+        <h1>Gallery</h1>
+    </div>
+    <div class="col-md-4" id="upload-img-btn">
+        <a asp-controller="Images" asp-action="Upload" class="btn btn-primary">Add Images</a>
+    </div>
+</div>
+
+<hr class="container hr-line">
+
+<div class="container">
+    <div class="row">
+        @if (Model != null)
+        {
+            <div class="column">
+                @foreach (var image in Model.Where(g => g.GroupNum == 1))
+                {
+                    <img src="Thumbnail/@image.Id" onclick="fullscreenImg('@image.Id')" id="gallery-img">
+                }
+            </div>
+            <div class="column">
+                @foreach (var image in Model.Where(g => g.GroupNum == 2))
+                {
+                    <img src="Thumbnail/@image.Id" onclick="fullscreenImg('@image.Id')" id="gallery-img">
+                }
+            </div>
+            <div class="column">
+                @foreach (var image in Model.Where(g => g.GroupNum == 3))
+                {
+                    <img src="Thumbnail/@image.Id" onclick="fullscreenImg('@image.Id')" id="gallery-img">
+                }
+            </div>
+        }
+    </div>
+
+    <div id="gallery-modal" class="modal">
+        <div class="container">
+            <!--hamburger icon-->
+            <div class="row">
+                <div class="col-md-10"></div>
+                <div class="col-md-2">
+                    <div class="dropdown">
+                        <a class="dropbtn">
+                            <img src="~/img/hamburger_icon.png" class="hamburger-icon" alt="hamburger icon" style="height: 50px; width: 50px; margin-bottom: 30px" />
+                        </a>
+                        <div class="dropdown-content">
+                            <a id="download-btn">Download</a>
+                            <a asp-action="Delete">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--image-->
+            <div class="row" id="img-row-modal"></div>
+            <!--comments-->
+            <div class="row modal-content" id="img-comments">
+                <div class="col-md-1"></div>
+                <div class="col-md-10">Comments go here</div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script src="~/js/gallery.js"></script>
+}

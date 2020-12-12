@@ -12,15 +12,16 @@
     {
         private readonly SocialMediaDbContext _data;
 
-        public TaggedUserService(SocialMediaDbContext data)
-        {
-            this._data = data;
-        }
+        public TaggedUserService(SocialMediaDbContext data) => this._data = data;
 
         public ICollection<TagFriendInPost> GetTagFriendsInPostsEntities(
             string taggerId,
             IEnumerable<string> taggedFriendsIds)
         {
+            // Remove duplicate values
+            var uniqueIds = new HashSet<string>(taggedFriendsIds);
+            taggedFriendsIds = uniqueIds.ToList();
+
             var entities = new List<TagFriendInPost>();
             foreach (var taggedId in taggedFriendsIds)
             {
@@ -37,6 +38,10 @@
             string taggerId,
             IEnumerable<string> taggedFriendsIds)
         {
+            // Remove duplicate values
+            var uniqueIds = new HashSet<string>(taggedFriendsIds);
+            taggedFriendsIds = uniqueIds.ToList();
+
             var entities = new List<TagFriendInComment>();
             foreach (var taggedId in taggedFriendsIds)
             {
@@ -48,18 +53,6 @@
             }
             return entities;
         }
-
-        public async Task<ICollection<UserServiceModel>> GetTaggedFriendsByPostIdAsync(int postId)
-        => await this._data
-              .TagFriendsInPosts
-              .Where(i => i.PostId == postId)
-              .Select(u => new UserServiceModel
-              {
-                  Id = u.TaggedId,
-                  UserName = u.Tagged.UserName,
-                  FullName = u.Tagged.FullName
-              })
-              .ToListAsync();
 
         public async Task TagFriendPost(string taggerId, string taggedId, int postId)
         {
@@ -124,18 +117,6 @@
             await this._data.SaveChangesAsync();
         }
 
-        public ICollection<UserServiceModel> GetUntaggedFriends(
-            List<UserServiceModel> taggedFriends,
-            List<UserServiceModel> friends)
-        {
-            foreach (var tagged in taggedFriends)
-            {
-                var taggedFriendIndex = GetTaggedFriendIndex(friends, tagged.Id);
-                friends[taggedFriendIndex].Checked = true;
-            }
-            return friends;
-        }
-
         public async Task DeleteTaggedFriendsInComments(ICollection<int> commentsIds)
         {
             var entities = await this._data.TagFriendsInComments
@@ -161,38 +142,41 @@
                         t.TaggerId == taggerId)
                 .ToListAsync();
 
+            var taggedFriendsIds = GetUniqueIds(taggedFriends);
+        
             for (int i = 0; i < tagFriendsEntities.Count; i++)
             {
                 //This action shows that the current friend is not untagged/modified.
-                if (taggedFriends.Any(t => t.Id == tagFriendsEntities[i].TaggedId))
+                if (taggedFriendsIds.Any(id =>id == tagFriendsEntities[i].TaggedId))
                 {
                     var taggedFriendIndex = GetTaggedFriendIndex(
-                        taggedFriends.ToList(),
+                        taggedFriendsIds.ToList(),
                         tagFriendsEntities[i].TaggedId);
-                    taggedFriends.RemoveAt(taggedFriendIndex);
+
+                    taggedFriendsIds.RemoveAt(taggedFriendIndex);
                 }
                 //This action shows that the current friend is untagged/modified.
-                else if (!taggedFriends.Any(t => t.Id == tagFriendsEntities[i].TaggedId))
+                else if (!taggedFriendsIds.Any(id => id == tagFriendsEntities[i].TaggedId))
                 {
                     await RemoveTaggedFriendPost(tagFriendsEntities[i].TaggedId, postId);
                 }
             }
 
             //This action check for newly tagged friends
-            if (taggedFriends.Count > 0)
+            if (taggedFriendsIds.Count > 0)
             {
-                foreach (var tagged in taggedFriends)
+                foreach (var taggedId in taggedFriendsIds)
                 {
-                    await TagFriendPost(taggerId, tagged.Id, postId);
+                    await TagFriendPost(taggerId, taggedId, postId);
                 }
             }
         }
 
         public async Task UpdateTaggedFriendsInCommentAsync(
-            IList<UserServiceModel> taggedFriends, 
-            int commentId, 
+            IList<UserServiceModel> taggedFriends,
+            int commentId,
             string taggerId)
-        
+
         {
             //Get tag friends entities
             var tagFriendsEntities = await this._data.TagFriendsInComments
@@ -200,44 +184,48 @@
                         t.TaggerId == taggerId)
                 .ToListAsync();
 
+            var taggedFriendsIds = GetUniqueIds(taggedFriends);
+
             for (int i = 0; i < tagFriendsEntities.Count; i++)
             {
                 //This action shows that the current friend is not untagged/modified.
-                if (taggedFriends.Any(t => t.Id == tagFriendsEntities[i].TaggedId))
+                if (taggedFriendsIds.Any(id => id == tagFriendsEntities[i].TaggedId))
                 {
                     var taggedFriendIndex = GetTaggedFriendIndex(
-                        taggedFriends.ToList(),
+                        taggedFriendsIds.ToList(),
                         tagFriendsEntities[i].TaggedId);
-                    taggedFriends.RemoveAt(taggedFriendIndex);
+                    taggedFriendsIds.RemoveAt(taggedFriendIndex);
                 }
                 //This action shows that the current friend is untagged/modified.
-                else if (!taggedFriends.Any(t => t.Id == tagFriendsEntities[i].TaggedId))
+                else if (!taggedFriendsIds.Any(id => id == tagFriendsEntities[i].TaggedId))
                 {
                     await RemoveTaggedFriendComment(tagFriendsEntities[i].TaggedId, commentId);
                 }
             }
 
             //This action check for newly tagged friends
-            if (taggedFriends.Count > 0)
+            if (taggedFriendsIds.Count > 0)
             {
-                foreach (var tagged in taggedFriends)
+                foreach (var taggedId in taggedFriendsIds)
                 {
-                    await TagFriendComment(taggerId, tagged.Id, commentId);
+                    await TagFriendComment(taggerId, taggedId, commentId);
                 }
             }
         }
 
-
-        private int GetTaggedFriendIndex(List<UserServiceModel> usersCollection, string taggedId)
+        private int GetTaggedFriendIndex(List<string> usersIds, string taggedId)
         {
-            for (int i = 0; i < usersCollection.Count; i++)
+            for (int i = 0; i < usersIds.Count; i++)
             {
-                if (usersCollection[i].Id == taggedId)
+                if (usersIds[i] == taggedId)
                 {
                     return i;
                 }
             }
             return -1;
         }
+
+        private IList<string> GetUniqueIds(IList<UserServiceModel> taggedFriends)
+        => taggedFriends.Select(i => i.Id).Distinct().ToList();
     }
 }

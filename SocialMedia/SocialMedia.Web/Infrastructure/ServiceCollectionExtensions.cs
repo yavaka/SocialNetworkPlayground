@@ -11,7 +11,6 @@
     {
         /// <summary>
         /// Automatic registration of services using reflection
-        /// Cannot register generic services!
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
@@ -20,7 +19,7 @@
             var serviceInterfaceType = typeof(IService);
             var singletonServiceInterfaceType = typeof(ISingletonService);
             var scopedServiceInterfaceType = typeof(IScopedService);
-
+            
             var types = serviceInterfaceType
                 .Assembly
                 .GetExportedTypes()
@@ -63,16 +62,11 @@
                     options.Password.RequireNonAlphanumeric = false;
                     options.Password.RequiredUniqueChars = 6;
                     options.User.RequireUniqueEmail = true;
+
                 })
                 .AddEntityFrameworkStores<SocialMediaDbContext>()
                 .AddDefaultTokenProviders();
 
-            return services;
-        }
-
-        public static IServiceCollection AddSocialMediaServices(this IServiceCollection services)
-        {
-            //Add services
             return services;
         }
     }

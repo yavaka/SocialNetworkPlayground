@@ -241,24 +241,29 @@ namespace SocialMedia.Data.Migrations
                     b.ToTable("Groups");
                 });
 
-            modelBuilder.Entity("SocialMedia.Data.Models.Image", b =>
+            modelBuilder.Entity("SocialMedia.Data.Models.ImageData", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ImageTitle")
+                    b.Property<byte[]>("FullscreenContent")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<byte[]>("OriginalContent")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("OriginalFileName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<byte[]>("MediumImageDate")
+                    b.Property<string>("OriginalType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("ThumbnailContent")
                         .HasColumnType("varbinary(max)");
 
-                    b.Property<byte[]>("OriginalImageData")
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<byte[]>("ThumbnailImageData")
-                        .HasColumnType("varbinary(max)");
+                    b.Property<DateTime>("UploadDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("UploaderId")
                         .HasColumnType("nvarchar(450)");
@@ -267,7 +272,7 @@ namespace SocialMedia.Data.Migrations
 
                     b.HasIndex("UploaderId");
 
-                    b.ToTable("Images");
+                    b.ToTable("ImagesData");
                 });
 
             modelBuilder.Entity("SocialMedia.Data.Models.Post", b =>
@@ -573,7 +578,7 @@ namespace SocialMedia.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SocialMedia.Data.Models.Image", b =>
+            modelBuilder.Entity("SocialMedia.Data.Models.ImageData", b =>
                 {
                     b.HasOne("SocialMedia.Data.Models.User", "Uploader")
                         .WithMany("Images")

@@ -13,7 +13,6 @@
         public async Task<UserServiceModel> GetUserByIdAsync(string userId)
         {
             var user = await this._userManager.FindByIdAsync(userId);
-
             return new UserServiceModel
             {
                 Id = user.Id,
